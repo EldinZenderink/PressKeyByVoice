@@ -19,7 +19,8 @@ PressKeyByVoice uses a few external libraries embedded within the executable:
 
 * [NAudio](https://naudio.codeplex.com/) - .NET Library for controlling your audio devices.
 * [InputSimulator](https://inputsimulator.codeplex.com/) - Awesome key board simulator that looks to any program like an actual keyboard input!
-* 
+
+
 ### Development
 This project is just a one off thing, I won't be adding new features unless it's requested a lot. Bug fixes will happen when issues arrise. 
 
