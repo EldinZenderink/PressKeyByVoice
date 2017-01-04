@@ -47,6 +47,11 @@
             this.DebugTextBox = new System.Windows.Forms.TextBox();
             this.StatusBox = new System.Windows.Forms.PictureBox();
             this.KeyPressStatusLabel = new System.Windows.Forms.Label();
+            this.ToggleKeyLabel = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.ToggleKeyInputBox = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TresholdTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StatusBox)).BeginInit();
@@ -111,9 +116,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(29, 284);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(101, 13);
+            this.label3.Size = new System.Drawing.Size(233, 13);
             this.label3.TabIndex = 7;
-            this.label3.Text = "Key To Be Pressed:";
+            this.label3.Text = "Key To Be Pressed (only lowercase characters):";
             // 
             // label4
             // 
@@ -206,11 +211,10 @@
             // 
             // DebugTextBox
             // 
-            this.DebugTextBox.Location = new System.Drawing.Point(26, 363);
+            this.DebugTextBox.Location = new System.Drawing.Point(29, 394);
             this.DebugTextBox.Name = "DebugTextBox";
             this.DebugTextBox.Size = new System.Drawing.Size(271, 20);
             this.DebugTextBox.TabIndex = 17;
-            this.DebugTextBox.TextChanged += new System.EventHandler(this.DebutTextBox_TextChanged);
             // 
             // StatusBox
             // 
@@ -232,11 +236,60 @@
             this.KeyPressStatusLabel.TabIndex = 19;
             this.KeyPressStatusLabel.Text = "Key v is not being pressed!";
             // 
+            // ToggleKeyLabel
+            // 
+            this.ToggleKeyLabel.AutoSize = true;
+            this.ToggleKeyLabel.Location = new System.Drawing.Point(257, 346);
+            this.ToggleKeyLabel.Name = "ToggleKeyLabel";
+            this.ToggleKeyLabel.Size = new System.Drawing.Size(19, 13);
+            this.ToggleKeyLabel.TabIndex = 23;
+            this.ToggleKeyLabel.Text = "F5";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(186, 346);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(65, 13);
+            this.label8.TabIndex = 22;
+            this.label8.Text = "Current Key:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(29, 327);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(135, 13);
+            this.label9.TabIndex = 21;
+            this.label9.Text = "Disable/Enable toggle key:";
+            // 
+            // ToggleKeyInputBox
+            // 
+            this.ToggleKeyInputBox.Location = new System.Drawing.Point(29, 343);
+            this.ToggleKeyInputBox.Name = "ToggleKeyInputBox";
+            this.ToggleKeyInputBox.Size = new System.Drawing.Size(142, 20);
+            this.ToggleKeyInputBox.TabIndex = 20;
+            this.ToggleKeyInputBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ToggleKeyInputBox_KeyDown);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(26, 378);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(139, 13);
+            this.label7.TabIndex = 24;
+            this.label7.Text = "Debug textbox, ignore this...";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(323, 395);
+            this.ClientSize = new System.Drawing.Size(323, 442);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.ToggleKeyLabel);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.ToggleKeyInputBox);
             this.Controls.Add(this.KeyPressStatusLabel);
             this.Controls.Add(this.StatusBox);
             this.Controls.Add(this.DebugTextBox);
@@ -289,6 +342,11 @@
         private System.Windows.Forms.TextBox DebugTextBox;
         private System.Windows.Forms.PictureBox StatusBox;
         private System.Windows.Forms.Label KeyPressStatusLabel;
+        private System.Windows.Forms.Label ToggleKeyLabel;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox ToggleKeyInputBox;
+        private System.Windows.Forms.Label label7;
     }
 }
 
