@@ -8,6 +8,7 @@ using WindowsInput.Native;
 using System.Diagnostics;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace PressKeyByVoice
 {
@@ -18,6 +19,8 @@ namespace PressKeyByVoice
         public Thread audioListener = null;
         public int sensitivity = 1;
         public int treshold = 100;
+        public int maxTreshold = 100;
+        public int recordSpeed = 1;
         public MMDevice device;
         public bool IsHovering = false;
         public VirtualKeyCode key = VirtualKeyCode.VK_V;
@@ -25,6 +28,10 @@ namespace PressKeyByVoice
         public char keyToBePressed = (char)86;
         public int DisableEnableKey = 116;
         public bool DisableEnable = false;
+        public int[] captureThemAll = new int[100];
+        public int gottaKnowWhenToStop = 0;
+        public bool smoothing = false;
+        public int keyPressDuration = 100;
 
         //all the extern methods imported
 
@@ -99,36 +106,86 @@ namespace PressKeyByVoice
                 if (!IsHovering)
                 {
                     int audioVolume = (int)(Math.Round(((device.AudioMeterInformation.MasterPeakValue * 100) * sensitivity)));
-                    if (audioVolume < 101)
-                    {
-                        PeakVolumeLabel.Text = audioVolume.ToString();
-                        PeakVolumeBar.Value = audioVolume;
 
-                    }
-                    else
+                    if(gottaKnowWhenToStop >= (int)Math.Round((double)(100 / recordSpeed)) && smoothing)
                     {
-                        PeakVolumeLabel.Text = audioVolume.ToString();
-                        PeakVolumeBar.Value = 100;
-                    }
-
-                   
-                    if (audioVolume > treshold)
-                    {
-                        if (selectedProcess != null)
+                        int sum = captureThemAll.Sum();
+                        int avg = sum / (100 / recordSpeed);
+                        captureThemAll = new int[100];
+                        gottaKnowWhenToStop = 0;
+                        UpdateDebugText("treshold: " + treshold + ", avg: " + avg);
+                        if (avg > treshold && avg < maxTreshold) 
                         {
-                            if (selectedProcess.Id == GetActiveProcessID())
+                            UpdateDebugText("you should activate :X");
+                            if (selectedProcess != null)
                             {
-                                Thread keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
-                                keyReleaser.Start();   
-                                KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
+                                if (selectedProcess.Id == GetActiveProcessID())
+                                {
+                                    Thread keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
+                                    keyReleaser.Start();
+                                    KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
+                                }
                             }
+                            StatusBox.BackColor = Color.Green;
                         }
-                        StatusBox.BackColor = Color.Green;
+                        else
+                        {
+                            KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is not being pressed!";
+                            StatusBox.BackColor = Color.Red;
+                        }
+
+                        if (avg < 101)
+                        {
+                            PeakVolumeLabel.Text = avg.ToString();
+                            PeakVolumeBar.Value = avg;
+                        }
+                        else
+                        {
+                            PeakVolumeLabel.Text = avg.ToString();
+                            PeakVolumeBar.Value = 100;
+                        }
+
+                    } else if (smoothing)
+                    {
+                        captureThemAll[gottaKnowWhenToStop] = audioVolume;
+                        gottaKnowWhenToStop++;
                     } else
                     {
-                        KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is not being pressed!";
-                        StatusBox.BackColor = Color.Red;
-                    }     
+                        if (audioVolume > treshold && audioVolume < maxTreshold)
+                        {
+                            if (selectedProcess != null)
+                            {
+                                if (selectedProcess.Id == GetActiveProcessID())
+                                {
+                                    Thread keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
+                                    keyReleaser.Start();
+                                    KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
+                                }
+                            }
+                            StatusBox.BackColor = Color.Green;
+                        }
+                        else
+                        {
+                            KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is not being pressed!";
+                            StatusBox.BackColor = Color.Red;
+                        }
+
+                        if (audioVolume < 101)
+                        {
+                            PeakVolumeLabel.Text = audioVolume.ToString();
+                            PeakVolumeBar.Value = audioVolume;
+                        }
+                        else
+                        {
+                            PeakVolumeLabel.Text = audioVolume.ToString();
+                            PeakVolumeBar.Value = 100;
+                        }
+                    }
+
+                    
+
+                   
+                    
                 }
             }
         }
@@ -162,7 +219,8 @@ namespace PressKeyByVoice
         {
             InputSimulator sim = new InputSimulator();
             sim.Keyboard.KeyDown(key);
-            Thread.Sleep(100);
+            Thread.Sleep(keyPressDuration);
+            sim.Keyboard.KeyUp(key);
         }
 
         
@@ -183,7 +241,8 @@ namespace PressKeyByVoice
                         UpdateDebugText("Issues with audio device: " + e.ToString());
                     }
                 }
-                Thread.Sleep(30);
+                
+                Thread.Sleep(recordSpeed);
             }
         }
 
@@ -199,7 +258,7 @@ namespace PressKeyByVoice
         }
 
         /// <summary>
-        /// Trackbar to set the treshold value, value use din UpdatePeakVolumeBar method to execute the key press when the peakvolume, multiplied by the sensitivity exceeds the treshold value
+        /// Trackbar to set the minimum treshold value, value use din UpdatePeakVolumeBar method to execute the key press when the peakvolume, multiplied by the sensitivity exceeds the treshold value
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -208,6 +267,7 @@ namespace PressKeyByVoice
             treshold = TresholdTrackBar.Value;
             TresholdLevel.Text = treshold.ToString();
             PeakVolumeBar.Value = treshold;
+            PeakVolumeLabel.Text = "Min Treshold: " + treshold.ToString();
         }
 
 
@@ -379,6 +439,56 @@ namespace PressKeyByVoice
             UnregisterHotKey(this.Handle, DisableEnableKey);
             DisableEnableKey = (int)e.KeyCode;
             RegisterHotKey(this.Handle, DisableEnableKey, 0, DisableEnableKey);           
+        }
+
+        private void ChunksPerSecondTrackBar_ValueChanged(object sender, EventArgs e)
+        {            
+            recordSpeed = (int)Math.Round((double)(1000 / ChunksPerSecondTrackBar.Value));
+            ChunksPerSecondLabel.Text = ChunksPerSecondTrackBar.Value.ToString();
+        }
+
+        private void SmoothingCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SmoothingCheckbox.Checked)
+            {
+                if(ChunksPerSecondTrackBar.Value < 100)
+                {
+                    ChunksPerSecondTrackBar.Value = 100;
+                }
+                ChunksPerSecondTrackBar.Minimum = 100;
+                smoothing = true;
+            } else
+            {
+                ChunksPerSecondTrackBar.Minimum = 1;
+                smoothing = false;
+            }
+        }
+
+        private void TresholdMaxTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            maxTreshold = TresholdMaxTrackBar.Value;
+            TresholdMaxLabel.Text = maxTreshold.ToString();
+            PeakVolumeBar.Value = maxTreshold;
+            PeakVolumeLabel.Text = "Max Treshold: " + maxTreshold.ToString();
+        }
+
+        private void TresholdMaxTrackBar_MouseHover(object sender, EventArgs e)
+        {
+            ModifyProgressBarColor.SetState(PeakVolumeBar, 2);
+            PeakVolumeBar.Value = maxTreshold;
+            IsHovering = true;
+        }
+
+        private void TresholdMaxTrackBar_MouseLeave(object sender, EventArgs e)
+        {
+            ModifyProgressBarColor.SetState(PeakVolumeBar, 1);
+            IsHovering = false;
+        }
+
+        private void KeyPressDurationTrackbar_ValueChanged(object sender, EventArgs e)
+        {
+            keyPressDuration = KeyPressDurationTrackbar.Value;
+            KeyPressDurationLabel.Text = keyPressDuration.ToString();
         }
     }
 
