@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.Linq;
+using NAudio.Wave;
 
 namespace PressKeyByVoice
 {
@@ -17,11 +18,13 @@ namespace PressKeyByVoice
         //all the public/shared values
         public Process selectedProcess;
         public Thread audioListener = null;
+        public Thread keyReleaser = null;
         public int sensitivity = 1;
         public int treshold = 100;
         public int maxTreshold = 100;
-        public int recordSpeed = 1;
+        public int recordSpeed = 100;
         public MMDevice device;
+        public WaveInEvent sourceStream = new WaveInEvent();
         public bool IsHovering = false;
         public VirtualKeyCode key = VirtualKeyCode.VK_V;
         public bool notstop = true;
@@ -31,7 +34,14 @@ namespace PressKeyByVoice
         public int[] captureThemAll = new int[100];
         public int gottaKnowWhenToStop = 0;
         public bool smoothing = false;
-        public int keyPressDuration = 100;
+        public int keyPressDuration = 1000;
+        public bool waveMode = true;
+        public bool peakMode = false;
+        public int waveDeviceId = 0;
+        public int peakDeviceId = 0;
+        public InputSimulator sim = new InputSimulator();
+        public SettingsData data = null;
+        public bool keyReleaserRunning = false;
 
         //all the extern methods imported
 
@@ -50,20 +60,82 @@ namespace PressKeyByVoice
         public Form1()
         {
             InitializeComponent();
+            data = new SettingsData();
+            sensitivity = data.sensitivity;
+            treshold = data.treshold;
+            maxTreshold = data.maxTreshold;
+            recordSpeed = data.recordSpeed;
+            DisableEnableKey = data.DisableEnableKey; 
+            keyPressDuration = data.keyPressDuration;
+            waveDeviceId = data.waveDeviceId;
+            peakDeviceId = data.peakDeviceId;
+            keyToBePressed = data.keyToBePressed;
+            smoothing = data.smoothing;
+            waveMode = data.waveMode;
+            peakMode = data.peakMode;
 
-            //get all audio devices
-            MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
-            var devices = enumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
-            for(int i =0; i < devices.Count; i++)
+            int val = keyToBePressed;
+            foreach (VirtualKeyCode vk in Enum.GetValues(typeof(VirtualKeyCode)))
             {
-                AudioDeviceComboBox.Items.Add(devices[i].ToString());
+                int x = (int)vk;
+                if (x == val)
+                {
+                    key = vk;
+                }
             }
-            //set default defice (first)
-            device = (MMDevice)devices[0];
+            SensLevel.Text = sensitivity.ToString();
+            SensitivityTrackBar.Value = sensitivity;
+            TresholdLevel.Text = treshold.ToString();
+            TresholdTrackBar.Value = treshold;
+            TresholdMaxLabel.Text = maxTreshold.ToString();
+            TresholdMaxTrackBar.Value = maxTreshold;
+            ChunksPerSecondLabel.Text = recordSpeed.ToString();
+            ChunksPerSecondTrackBar.Value = recordSpeed;
+            KeyPressDelayLabel.Text = keyPressDuration.ToString();
+            KeyPressDelayTrackBar.Value = keyPressDuration;
+            SmoothingCheckbox.Checked = smoothing;
+            CurrentKey.Text = char.ToLower(keyToBePressed).ToString();
+            KeyTextBox.Text = char.ToLower(keyToBePressed).ToString();
+            ToggleKeyLabel.Text = ((VirtualKeyCode)DisableEnableKey).ToString();
+            ToggleKeyInputBox.Text = ((VirtualKeyCode)DisableEnableKey).ToString();
+            if (waveMode)
+            {
+                int waveInDevices = WaveIn.DeviceCount;
+                for (int waveInDevice = 0; waveInDevice < waveInDevices; waveInDevice++)
+                {
+                    WaveInCapabilities deviceInfo = WaveIn.GetCapabilities(waveInDevice);
+                    AudioDeviceComboBox.Items.Add(deviceInfo.ProductName);
+                }
+                AudioDeviceComboBox.SelectedIndex = waveDeviceId;
+                sourceStream = new WaveInEvent();
+                sourceStream.DeviceNumber = waveDeviceId;
+                sourceStream.WaveFormat = new WaveFormat(44100, WaveIn.GetCapabilities(waveDeviceId).Channels);
+                sourceStream.DataAvailable += new EventHandler<WaveInEventArgs>(sourceStream_DataAvailable);
+                sourceStream.StartRecording();
+            } else if (peakMode)
+            {
+                MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
+                var devices = enumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+                for (int i = 0; i < devices.Count; i++)
+                {
+                    AudioDeviceComboBox.Items.Add(devices[i].ToString());
+                }
+                AudioDeviceComboBox.SelectedIndex = peakDeviceId;
 
-            //Run the listener thread
-            audioListener = new Thread(() => AudioListener());
-            audioListener.Start();
+                //set default defice (first)
+                device = (MMDevice)devices[peakDeviceId];
+            }
+
+            WaveModeCheckbox.Checked = waveMode;
+            PeakModeCheckbox.Checked = peakMode;
+
+            ChunksPerSecondTrackBar.Enabled = false;
+            ChunksPerSecondTrackBar.Visible = false;
+            ChunksPerSecondLabel.Visible = false;
+            TimesPerSecondLabel.Visible = false;
+            SmoothingCheckbox.Enabled = false;
+            SmoothingCheckbox.Visible = false;
+            
 
             //Get all process currently running:
             Process[] processlist = Process.GetProcesses();
@@ -71,6 +143,7 @@ namespace PressKeyByVoice
             {
                 ProgramComboBox.Items.Add(processlist[i].ProcessName);
             }
+            ProgramComboBox.Sorted = true;
 
             //Set the default key for enabeling / disabeling the program
             RegisterHotKey(this.Handle, DisableEnableKey, 0, (int)Keys.F5);
@@ -86,106 +159,221 @@ namespace PressKeyByVoice
         {
             ComboBox comboBox = (ComboBox)sender;
             int index = comboBox.SelectedIndex;
-            MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
-            var devices = enumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
-            device = (MMDevice)devices[index];
-            DebugTextBox.Text = "Selected device " + device.ToString() + " at index " + index;
+            if (peakMode)
+            {
+                MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
+                var devices = enumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+                device = (MMDevice)devices[index];
+
+                //Run the listener thread
+
+                if(audioListener != null && audioListener.IsAlive)
+                {
+                    audioListener.Abort();
+                }
+                audioListener = new Thread(() => AudioListener());
+                audioListener.Start();
+            } else if (waveMode)
+            {
+                if (audioListener != null && audioListener.IsAlive)
+                {
+                    audioListener.Abort();
+                }
+                if(sourceStream != null)
+                {
+                    try
+                    {
+                        sourceStream.StopRecording();
+                    }
+                    catch
+                    {
+                    }
+                }
+                sourceStream = new WaveInEvent();
+                sourceStream.DeviceNumber = index;
+                sourceStream.WaveFormat = new WaveFormat(44100, WaveIn.GetCapabilities(index).Channels);
+                sourceStream.DataAvailable += new EventHandler<WaveInEventArgs>(sourceStream_DataAvailable);
+                sourceStream.StartRecording();
+                DebugTextBox.Text = "Selected device: " + index;
+            }
+        }
+
+        private void sourceStream_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            int[] bytesAsInts = Array.ConvertAll(e.Buffer, c => (int)c);
+            int[] positiveAmplitudes = new int[bytesAsInts.Length];
+            int o = 0;
+            for (int i = 0; i < bytesAsInts.Length; i++)
+            {
+                if (bytesAsInts[i] > 0)
+                {
+                    positiveAmplitudes[o] = bytesAsInts[i];
+                    o++;
+                }
+            }
+
+            int volume = (int)(Math.Pow(((((positiveAmplitudes.Average() / 10) - 10) * 100) - 200), 2) / (1000 / sensitivity));
+
+            if (volume > treshold && volume < maxTreshold)
+            {
+                if (selectedProcess != null)
+                {
+                    if (selectedProcess.Id == GetActiveProcessID())
+                    {
+                        if(!keyReleaserRunning)
+                        {
+                            keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
+                            try { keyReleaser.Start(); } catch { };
+                            
+                        }
+                        //sim.Keyboard.KeyDown(key);
+                        UpdateKeyPressStatusText("Key " + keyToBePressed.ToString() + " is currently being pressed!");
+                    }
+                }
+            }
+            else
+            {
+                UpdateKeyPressStatusText("Key " + keyToBePressed.ToString() + " is not being pressed!");
+               // sim.Keyboard.KeyUp(key);
+            }
+            
+            UpdatePeakVolumeBar(volume);
+        }
+
+        private void UpdateKeyPressStatusText(string text)
+        {
+            if (KeyPressStatusLabel.InvokeRequired)
+            {
+                KeyPressStatusLabel.BeginInvoke(new MethodInvoker(() => UpdateKeyPressStatusText(text)));
+            } else
+            {
+                KeyPressStatusLabel.Text = text;
+            }
+        }
+
+        private void UpdateStatusBoxColor(Color color)
+        {
+            if (StatusBox.InvokeRequired)
+            {
+                StatusBox.BeginInvoke(new MethodInvoker(() => UpdateStatusBoxColor(color)));
+            } else
+            {
+                StatusBox.BackColor = color;
+            }
         }
 
         /// <summary>
         /// The function that actually performs the comparison on  peak volume received from the audio device, this runs on the main thread due to NAudio having issues with running within non initiated threads at the start
         /// </summary>
-        private void UpdatePeakVolumeBar()
-        {
+        private void UpdatePeakVolumeBar(int volume)
+        {            
             if (PeakVolumeBar.InvokeRequired)
             {
-                PeakVolumeBar.Invoke(new MethodInvoker(() => UpdatePeakVolumeBar()));
+                PeakVolumeBar.BeginInvoke(new MethodInvoker(() => UpdatePeakVolumeBar(volume)));
             }
             else
             {
                 if (!IsHovering)
                 {
-                    int audioVolume = (int)(Math.Round(((device.AudioMeterInformation.MasterPeakValue * 100) * sensitivity)));
-
-                    if(gottaKnowWhenToStop >= (int)Math.Round((double)(100 / recordSpeed)) && smoothing)
+                    if (peakMode)
                     {
-                        int sum = captureThemAll.Sum();
-                        int avg = sum / (100 / recordSpeed);
-                        captureThemAll = new int[100];
-                        gottaKnowWhenToStop = 0;
-                        UpdateDebugText("treshold: " + treshold + ", avg: " + avg);
-                        if (avg > treshold && avg < maxTreshold) 
-                        {
-                            UpdateDebugText("you should activate :X");
-                            if (selectedProcess != null)
-                            {
-                                if (selectedProcess.Id == GetActiveProcessID())
-                                {
-                                    Thread keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
-                                    keyReleaser.Start();
-                                    KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
-                                }
-                            }
-                            StatusBox.BackColor = Color.Green;
-                        }
-                        else
-                        {
-                            KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is not being pressed!";
-                            StatusBox.BackColor = Color.Red;
-                        }
+                        int audioVolume = (int)(Math.Round(((device.AudioMeterInformation.MasterPeakValue * 100) * sensitivity)));
 
-                        if (avg < 101)
+                        if (gottaKnowWhenToStop >= (int)Math.Round((double)(100 / recordSpeed)) && smoothing)
                         {
-                            PeakVolumeLabel.Text = avg.ToString();
-                            PeakVolumeBar.Value = avg;
+                            int sum = captureThemAll.Sum();
+                            int avg = sum / (100 / recordSpeed);
+                            captureThemAll = new int[100];
+                            gottaKnowWhenToStop = 0;
+                            UpdateDebugText("treshold: " + treshold + ", avg: " + avg);
+                            if (avg > treshold && avg < maxTreshold)
+                            {
+                                UpdateDebugText("you should activate :X");
+                                if (selectedProcess != null)
+                                {
+                                    if (selectedProcess.Id == GetActiveProcessID())
+                                    {
+
+                                        if (keyReleaser == null || !keyReleaser.IsAlive)
+                                        {
+                                            keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
+                                            keyReleaser.Start();
+                                        }
+                                        KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
+                                    }
+                                }
+                                StatusBox.BackColor = Color.Green;
+                            }
+                            else
+                            {
+                                KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is not being pressed!";
+                                StatusBox.BackColor = Color.Red;
+                            }
+
+                            if (avg < 101)
+                            {
+                                PeakVolumeLabel.Text = avg.ToString();
+                                PeakVolumeBar.Value = avg;
+                            }
+                            else
+                            {
+                                PeakVolumeLabel.Text = avg.ToString();
+                                PeakVolumeBar.Value = 100;
+                            }
+
+                        }
+                        else if (smoothing)
+                        {
+                            captureThemAll[gottaKnowWhenToStop] = audioVolume;
+                            gottaKnowWhenToStop++;
                         }
                         else
                         {
-                            PeakVolumeLabel.Text = avg.ToString();
+                            if (audioVolume > treshold && audioVolume < maxTreshold)
+                            {
+                                if (selectedProcess != null)
+                                {
+                                    if (selectedProcess.Id == GetActiveProcessID())
+                                    {
+                                        /*Thread keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
+                                        keyReleaser.Start();*/
+                                        sim.Keyboard.KeyDown(key);
+                                        KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
+                                    }
+                                }
+                                StatusBox.BackColor = Color.Green;
+                            }
+                            else
+                            {
+                                KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is not being pressed!";
+                                StatusBox.BackColor = Color.Red;
+                                sim.Keyboard.KeyUp(key);
+                            }
+
+                            if (audioVolume < 101)
+                            {
+                                PeakVolumeLabel.Text = audioVolume.ToString();
+                                PeakVolumeBar.Value = audioVolume;
+                            }
+                            else
+                            {
+                                PeakVolumeLabel.Text = audioVolume.ToString();
+                                PeakVolumeBar.Value = 100;
+                            }
+                        }
+                    } else if (waveMode)
+                    {
+                        if(volume < 101) {
+
+                            PeakVolumeLabel.Text = volume.ToString();
+                            PeakVolumeBar.Value = volume;
+                        } else
+                        {
+
+                            PeakVolumeLabel.Text = volume.ToString();
                             PeakVolumeBar.Value = 100;
                         }
-
-                    } else if (smoothing)
-                    {
-                        captureThemAll[gottaKnowWhenToStop] = audioVolume;
-                        gottaKnowWhenToStop++;
-                    } else
-                    {
-                        if (audioVolume > treshold && audioVolume < maxTreshold)
-                        {
-                            if (selectedProcess != null)
-                            {
-                                if (selectedProcess.Id == GetActiveProcessID())
-                                {
-                                    Thread keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
-                                    keyReleaser.Start();
-                                    KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
-                                }
-                            }
-                            StatusBox.BackColor = Color.Green;
-                        }
-                        else
-                        {
-                            KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is not being pressed!";
-                            StatusBox.BackColor = Color.Red;
-                        }
-
-                        if (audioVolume < 101)
-                        {
-                            PeakVolumeLabel.Text = audioVolume.ToString();
-                            PeakVolumeBar.Value = audioVolume;
-                        }
-                        else
-                        {
-                            PeakVolumeLabel.Text = audioVolume.ToString();
-                            PeakVolumeBar.Value = 100;
-                        }
-                    }
-
-                    
-
-                   
-                    
+                    }              
                 }
             }
         }
@@ -200,7 +388,7 @@ namespace PressKeyByVoice
             {
                 try
                 {
-                    DebugTextBox.Invoke(new MethodInvoker(() => UpdateDebugText(text)));
+                    DebugTextBox.BeginInvoke(new MethodInvoker(() => UpdateDebugText(text)));
                 } catch
                 {
                     //Well.. cant really do much here, if the invokers fails :(.
@@ -217,10 +405,16 @@ namespace PressKeyByVoice
         /// </summary>
         private void KeyReleaser()
         {
-            InputSimulator sim = new InputSimulator();
-            sim.Keyboard.KeyDown(key);
-            Thread.Sleep(keyPressDuration);
-            sim.Keyboard.KeyUp(key);
+            keyReleaserRunning = true;
+            UpdateStatusBoxColor(Color.Green);
+            DateTime _desired = DateTime.Now.AddMilliseconds(keyPressDuration);
+            while (DateTime.Now < _desired)
+            {
+                sim.Keyboard.KeyDown(key);
+                Thread.Sleep(10);
+            }
+            UpdateStatusBoxColor(Color.Red);
+            keyReleaserRunning = false;
         }
 
         
@@ -235,7 +429,7 @@ namespace PressKeyByVoice
                 {
                     try
                     {
-                        UpdatePeakVolumeBar();
+                        UpdatePeakVolumeBar(0);
                     } catch (Exception e)
                     {
                         UpdateDebugText("Issues with audio device: " + e.ToString());
@@ -326,7 +520,7 @@ namespace PressKeyByVoice
         /// <param name="e"></param>
         private void KeyTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            int val = 86;
+            int val = keyToBePressed;
             if (!char.IsUpper(e.KeyChar))
             {
                 CurrentKey.Text = e.KeyChar.ToString();
@@ -357,7 +551,13 @@ namespace PressKeyByVoice
         /// <param name="e"></param>
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            audioListener.Abort();
+            if (peakMode)
+            {
+                if (audioListener != null && audioListener.IsAlive)
+                {
+                    audioListener.Abort();
+                }
+            }
             notstop = true;
         }
 
@@ -370,7 +570,11 @@ namespace PressKeyByVoice
         {
             try
             {
-                audioListener.Abort();
+
+                if (audioListener != null && audioListener.IsAlive)
+                {
+                    audioListener.Abort();
+                }
             } catch
             {
                 notstop = true;
@@ -384,7 +588,7 @@ namespace PressKeyByVoice
         /// <param name="e"></param>
         private void ProgramComboBox_Click(object sender, EventArgs e)
         {
-
+            ProgramComboBox.Items.Clear();
             Process[] processlist = Process.GetProcesses();
             for (int i = 0; i < processlist.Length; i++)
             {
@@ -485,10 +689,195 @@ namespace PressKeyByVoice
             IsHovering = false;
         }
 
-        private void KeyPressDurationTrackbar_ValueChanged(object sender, EventArgs e)
+        private void WaveModeCheckbox_Click(object sender, EventArgs e)
         {
-            keyPressDuration = KeyPressDurationTrackbar.Value;
-            KeyPressDurationLabel.Text = keyPressDuration.ToString();
+            if (PeakModeCheckbox.Checked)
+            {
+                PeakModeCheckbox.Checked = false;
+                peakMode = false;
+            }
+            ChunksPerSecondTrackBar.Enabled = false;
+            ChunksPerSecondTrackBar.Visible = false;
+            ChunksPerSecondLabel.Visible = false;
+            TimesPerSecondLabel.Visible = false;
+            SmoothingCheckbox.Enabled = false;
+            SmoothingCheckbox.Visible = false;
+            waveMode = WaveModeCheckbox.Checked;
+
+            int waveInDevices = WaveIn.DeviceCount;
+            AudioDeviceComboBox.Items.Clear();
+            for (int waveInDevice = 0; waveInDevice < waveInDevices; waveInDevice++)
+            {
+                WaveInCapabilities deviceInfo = WaveIn.GetCapabilities(waveInDevice);
+                AudioDeviceComboBox.Items.Add(deviceInfo.ProductName);
+            }
+            if(audioListener != null && audioListener.IsAlive)
+            {
+                audioListener.Abort();
+            }
+            DebugTextBox.Text = "Wave mode clicked";
+        }
+
+        private void PeakModeCheckbox_Click(object sender, EventArgs e)
+        {
+
+            MessageBox.Show("WARNING: This is the old mode and should not be used, it can be a bit glitchy. \n If the sound bar isn't moving, you need to open the following window: \n -Right click on the speaker/volume button in the bottom right corner of your screen. \n -Then hit: recording devices. \n Keep this window open in the background!. \n This mode allows for a bit more customizing by adding smoothing, but it shouldn't be needed and is a bit of a gimmick.");
+
+            if (WaveModeCheckbox.Checked)
+            {
+                WaveModeCheckbox.Checked = false;
+                waveMode = false;
+            }
+
+            ChunksPerSecondTrackBar.Enabled = true;
+            ChunksPerSecondTrackBar.Visible = true;
+            ChunksPerSecondLabel.Visible = true;
+            TimesPerSecondLabel.Visible = true;
+            SmoothingCheckbox.Enabled = true;
+            SmoothingCheckbox.Visible = true;
+            peakMode = PeakModeCheckbox.Checked;
+
+
+            if (sourceStream != null)
+            {
+                try
+                {
+                    sourceStream.StopRecording();
+                }
+                catch
+                {
+
+                }
+            }
+            DebugTextBox.Text = "Peak mode clicked";
+            //get all audio devices
+            MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
+            var devices = enumerator.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+            AudioDeviceComboBox.Items.Clear();
+            for (int i = 0; i < devices.Count; i++)
+            {
+                AudioDeviceComboBox.Items.Add(devices[i].ToString());
+            }
+            //set default defice (first)
+            device = (MMDevice)devices[0];
+        }
+
+      
+        private void WaveModeCheckbox_MouseHover(object sender, EventArgs e)
+        {
+           
+            IsHovering = true;
+            stopEverything();
+        }
+
+        private void WaveModeCheckbox_MouseLeave(object sender, EventArgs e)
+        {
+            IsHovering = false;
+            restartEverything();
+        }
+
+        private void PeakModeCheckbox_MouseHover(object sender, EventArgs e)
+        {
+            IsHovering = true;
+            stopEverything();
+        }
+
+        private void PeakModeCheckbox_MouseLeave(object sender, EventArgs e)
+        {
+            IsHovering = false;
+            restartEverything();
+        }
+
+
+        private void SmoothingCheckbox_MouseHover(object sender, EventArgs e)
+        {
+            IsHovering = true;
+            stopEverything();
+        }
+
+        private void SmoothingCheckbox_MouseLeave(object sender, EventArgs e)
+        {
+            IsHovering = false;
+            restartEverything();
+        }
+
+        private void KeyPressDelayTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            keyPressDuration = KeyPressDelayTrackBar.Value;
+            KeyPressDelayLabel.Text = keyPressDuration.ToString();
+        }
+
+        private void restartEverything()
+        {
+            if (sourceStream != null)
+            {
+                try
+                {
+                    sourceStream.StartRecording();
+                }
+                catch
+                {
+                }
+            }
+
+
+            if (audioListener != null)
+            {
+                try
+                {
+                    audioListener.Start();
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
+        private void stopEverything()
+        {
+            if (sourceStream != null)
+            {
+                try
+                {
+                    sourceStream.StopRecording();
+                }
+                catch
+                {
+                }
+            }
+
+            if (audioListener != null && audioListener.IsAlive)
+            {
+                try
+                {
+
+                    audioListener.Abort();
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+
+            data.sensitivity = sensitivity;
+            data.treshold = treshold;
+            data.maxTreshold = maxTreshold;
+            data.recordSpeed = recordSpeed;
+            data.DisableEnableKey = DisableEnableKey;
+            data.keyPressDuration = keyPressDuration;
+            data.waveDeviceId = waveDeviceId;
+            data.peakDeviceId = peakDeviceId;
+            data.keyToBePressed = keyToBePressed;
+            data.smoothing = smoothing;
+            data.waveMode = waveMode;
+            data.peakMode = peakMode;
+            data.SaveData();
+            MessageBox.Show("Succesfully saved your settings!");
         }
     }
 

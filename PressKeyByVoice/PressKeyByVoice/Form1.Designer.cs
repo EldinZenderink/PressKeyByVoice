@@ -53,26 +53,30 @@
             this.ToggleKeyInputBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.ChunksPerSecondLabel = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
+            this.TimesPerSecondLabel = new System.Windows.Forms.Label();
             this.ChunksPerSecondTrackBar = new System.Windows.Forms.TrackBar();
             this.SmoothingCheckbox = new System.Windows.Forms.CheckBox();
             this.TresholdMaxLabel = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.TresholdMaxTrackBar = new System.Windows.Forms.TrackBar();
-            this.KeyPressDurationLabel = new System.Windows.Forms.Label();
+            this.WaveModeCheckbox = new System.Windows.Forms.CheckBox();
+            this.PeakModeCheckbox = new System.Windows.Forms.CheckBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.KeyPressDelayLabel = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.KeyPressDurationTrackbar = new System.Windows.Forms.TrackBar();
+            this.KeyPressDelayTrackBar = new System.Windows.Forms.TrackBar();
+            this.SaveButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TresholdTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StatusBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ChunksPerSecondTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TresholdMaxTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.KeyPressDurationTrackbar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.KeyPressDelayTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // PeakVolumeBar
             // 
-            this.PeakVolumeBar.Location = new System.Drawing.Point(26, 12);
+            this.PeakVolumeBar.Location = new System.Drawing.Point(26, 72);
             this.PeakVolumeBar.Name = "PeakVolumeBar";
             this.PeakVolumeBar.Size = new System.Drawing.Size(268, 47);
             this.PeakVolumeBar.TabIndex = 0;
@@ -80,7 +84,7 @@
             // AudioDeviceComboBox
             // 
             this.AudioDeviceComboBox.FormattingEnabled = true;
-            this.AudioDeviceComboBox.Location = new System.Drawing.Point(26, 415);
+            this.AudioDeviceComboBox.Location = new System.Drawing.Point(338, 31);
             this.AudioDeviceComboBox.Name = "AudioDeviceComboBox";
             this.AudioDeviceComboBox.Size = new System.Drawing.Size(271, 21);
             this.AudioDeviceComboBox.TabIndex = 1;
@@ -90,7 +94,7 @@
             // ProgramComboBox
             // 
             this.ProgramComboBox.FormattingEnabled = true;
-            this.ProgramComboBox.Location = new System.Drawing.Point(26, 456);
+            this.ProgramComboBox.Location = new System.Drawing.Point(338, 72);
             this.ProgramComboBox.Name = "ProgramComboBox";
             this.ProgramComboBox.Size = new System.Drawing.Size(271, 21);
             this.ProgramComboBox.TabIndex = 2;
@@ -100,7 +104,7 @@
             // 
             // KeyTextBox
             // 
-            this.KeyTextBox.Location = new System.Drawing.Point(26, 496);
+            this.KeyTextBox.Location = new System.Drawing.Point(338, 181);
             this.KeyTextBox.Name = "KeyTextBox";
             this.KeyTextBox.Size = new System.Drawing.Size(142, 20);
             this.KeyTextBox.TabIndex = 3;
@@ -109,7 +113,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(26, 399);
+            this.label1.Location = new System.Drawing.Point(338, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(74, 13);
             this.label1.TabIndex = 5;
@@ -118,7 +122,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(26, 440);
+            this.label2.Location = new System.Drawing.Point(338, 56);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(46, 13);
             this.label2.TabIndex = 6;
@@ -127,7 +131,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(26, 480);
+            this.label3.Location = new System.Drawing.Point(338, 165);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(233, 13);
             this.label3.TabIndex = 7;
@@ -136,7 +140,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(183, 499);
+            this.label4.Location = new System.Drawing.Point(495, 184);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(65, 13);
             this.label4.TabIndex = 8;
@@ -145,7 +149,7 @@
             // CurrentKey
             // 
             this.CurrentKey.AutoSize = true;
-            this.CurrentKey.Location = new System.Drawing.Point(254, 499);
+            this.CurrentKey.Location = new System.Drawing.Point(566, 184);
             this.CurrentKey.Name = "CurrentKey";
             this.CurrentKey.Size = new System.Drawing.Size(13, 13);
             this.CurrentKey.TabIndex = 9;
@@ -153,7 +157,7 @@
             // 
             // SensitivityTrackBar
             // 
-            this.SensitivityTrackBar.Location = new System.Drawing.Point(26, 78);
+            this.SensitivityTrackBar.Location = new System.Drawing.Point(23, 181);
             this.SensitivityTrackBar.Maximum = 100;
             this.SensitivityTrackBar.Minimum = 1;
             this.SensitivityTrackBar.Name = "SensitivityTrackBar";
@@ -165,7 +169,7 @@
             // TresholdTrackBar
             // 
             this.TresholdTrackBar.BackColor = System.Drawing.SystemColors.Control;
-            this.TresholdTrackBar.Location = new System.Drawing.Point(26, 124);
+            this.TresholdTrackBar.Location = new System.Drawing.Point(23, 227);
             this.TresholdTrackBar.Maximum = 100;
             this.TresholdTrackBar.Minimum = 1;
             this.TresholdTrackBar.Name = "TresholdTrackBar";
@@ -179,7 +183,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(26, 62);
+            this.label5.Location = new System.Drawing.Point(23, 165);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(57, 13);
             this.label5.TabIndex = 12;
@@ -188,7 +192,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(26, 108);
+            this.label6.Location = new System.Drawing.Point(23, 211);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(77, 13);
             this.label6.TabIndex = 13;
@@ -197,7 +201,7 @@
             // TresholdLevel
             // 
             this.TresholdLevel.AutoSize = true;
-            this.TresholdLevel.Location = new System.Drawing.Point(106, 108);
+            this.TresholdLevel.Location = new System.Drawing.Point(103, 211);
             this.TresholdLevel.Name = "TresholdLevel";
             this.TresholdLevel.Size = new System.Drawing.Size(25, 13);
             this.TresholdLevel.TabIndex = 14;
@@ -206,7 +210,7 @@
             // SensLevel
             // 
             this.SensLevel.AutoSize = true;
-            this.SensLevel.Location = new System.Drawing.Point(83, 62);
+            this.SensLevel.Location = new System.Drawing.Point(80, 165);
             this.SensLevel.Name = "SensLevel";
             this.SensLevel.Size = new System.Drawing.Size(13, 13);
             this.SensLevel.TabIndex = 15;
@@ -216,7 +220,7 @@
             // 
             this.PeakVolumeLabel.AutoSize = true;
             this.PeakVolumeLabel.BackColor = System.Drawing.Color.Transparent;
-            this.PeakVolumeLabel.Location = new System.Drawing.Point(155, 29);
+            this.PeakVolumeLabel.Location = new System.Drawing.Point(155, 89);
             this.PeakVolumeLabel.Name = "PeakVolumeLabel";
             this.PeakVolumeLabel.Size = new System.Drawing.Size(13, 13);
             this.PeakVolumeLabel.TabIndex = 16;
@@ -224,7 +228,7 @@
             // 
             // DebugTextBox
             // 
-            this.DebugTextBox.Location = new System.Drawing.Point(26, 590);
+            this.DebugTextBox.Location = new System.Drawing.Point(338, 275);
             this.DebugTextBox.Name = "DebugTextBox";
             this.DebugTextBox.Size = new System.Drawing.Size(271, 20);
             this.DebugTextBox.TabIndex = 17;
@@ -232,9 +236,9 @@
             // StatusBox
             // 
             this.StatusBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.StatusBox.Location = new System.Drawing.Point(29, 362);
+            this.StatusBox.Location = new System.Drawing.Point(26, 125);
             this.StatusBox.Name = "StatusBox";
-            this.StatusBox.Size = new System.Drawing.Size(252, 25);
+            this.StatusBox.Size = new System.Drawing.Size(268, 37);
             this.StatusBox.TabIndex = 18;
             this.StatusBox.TabStop = false;
             // 
@@ -243,7 +247,7 @@
             this.KeyPressStatusLabel.AutoSize = true;
             this.KeyPressStatusLabel.BackColor = System.Drawing.Color.Transparent;
             this.KeyPressStatusLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.KeyPressStatusLabel.Location = new System.Drawing.Point(89, 368);
+            this.KeyPressStatusLabel.Location = new System.Drawing.Point(92, 137);
             this.KeyPressStatusLabel.Name = "KeyPressStatusLabel";
             this.KeyPressStatusLabel.Size = new System.Drawing.Size(134, 13);
             this.KeyPressStatusLabel.TabIndex = 19;
@@ -252,7 +256,7 @@
             // ToggleKeyLabel
             // 
             this.ToggleKeyLabel.AutoSize = true;
-            this.ToggleKeyLabel.Location = new System.Drawing.Point(254, 542);
+            this.ToggleKeyLabel.Location = new System.Drawing.Point(566, 227);
             this.ToggleKeyLabel.Name = "ToggleKeyLabel";
             this.ToggleKeyLabel.Size = new System.Drawing.Size(19, 13);
             this.ToggleKeyLabel.TabIndex = 23;
@@ -261,7 +265,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(183, 542);
+            this.label8.Location = new System.Drawing.Point(495, 227);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(65, 13);
             this.label8.TabIndex = 22;
@@ -270,7 +274,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(26, 523);
+            this.label9.Location = new System.Drawing.Point(338, 208);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(135, 13);
             this.label9.TabIndex = 21;
@@ -278,7 +282,7 @@
             // 
             // ToggleKeyInputBox
             // 
-            this.ToggleKeyInputBox.Location = new System.Drawing.Point(26, 539);
+            this.ToggleKeyInputBox.Location = new System.Drawing.Point(338, 224);
             this.ToggleKeyInputBox.Name = "ToggleKeyInputBox";
             this.ToggleKeyInputBox.Size = new System.Drawing.Size(142, 20);
             this.ToggleKeyInputBox.TabIndex = 20;
@@ -287,7 +291,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(23, 574);
+            this.label7.Location = new System.Drawing.Point(335, 259);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(139, 13);
             this.label7.TabIndex = 24;
@@ -296,49 +300,50 @@
             // ChunksPerSecondLabel
             // 
             this.ChunksPerSecondLabel.AutoSize = true;
-            this.ChunksPerSecondLabel.Location = new System.Drawing.Point(129, 213);
+            this.ChunksPerSecondLabel.Location = new System.Drawing.Point(126, 316);
             this.ChunksPerSecondLabel.Name = "ChunksPerSecondLabel";
-            this.ChunksPerSecondLabel.Size = new System.Drawing.Size(31, 13);
+            this.ChunksPerSecondLabel.Size = new System.Drawing.Size(25, 13);
             this.ChunksPerSecondLabel.TabIndex = 27;
-            this.ChunksPerSecondLabel.Text = "1000";
+            this.ChunksPerSecondLabel.Text = "100";
             // 
-            // label11
+            // TimesPerSecondLabel
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(26, 213);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(97, 13);
-            this.label11.TabIndex = 26;
-            this.label11.Text = "Times Per Second:";
+            this.TimesPerSecondLabel.AutoSize = true;
+            this.TimesPerSecondLabel.Location = new System.Drawing.Point(23, 316);
+            this.TimesPerSecondLabel.Name = "TimesPerSecondLabel";
+            this.TimesPerSecondLabel.Size = new System.Drawing.Size(97, 13);
+            this.TimesPerSecondLabel.TabIndex = 26;
+            this.TimesPerSecondLabel.Text = "Times Per Second:";
             // 
             // ChunksPerSecondTrackBar
             // 
             this.ChunksPerSecondTrackBar.BackColor = System.Drawing.SystemColors.Control;
-            this.ChunksPerSecondTrackBar.Location = new System.Drawing.Point(26, 229);
-            this.ChunksPerSecondTrackBar.Maximum = 1000;
+            this.ChunksPerSecondTrackBar.Location = new System.Drawing.Point(23, 332);
+            this.ChunksPerSecondTrackBar.Maximum = 100;
             this.ChunksPerSecondTrackBar.Minimum = 1;
             this.ChunksPerSecondTrackBar.Name = "ChunksPerSecondTrackBar";
             this.ChunksPerSecondTrackBar.Size = new System.Drawing.Size(268, 45);
-            this.ChunksPerSecondTrackBar.SmallChange = 10;
             this.ChunksPerSecondTrackBar.TabIndex = 25;
-            this.ChunksPerSecondTrackBar.Value = 1000;
+            this.ChunksPerSecondTrackBar.Value = 100;
             this.ChunksPerSecondTrackBar.ValueChanged += new System.EventHandler(this.ChunksPerSecondTrackBar_ValueChanged);
             // 
             // SmoothingCheckbox
             // 
             this.SmoothingCheckbox.AutoSize = true;
-            this.SmoothingCheckbox.Location = new System.Drawing.Point(29, 269);
+            this.SmoothingCheckbox.Location = new System.Drawing.Point(26, 372);
             this.SmoothingCheckbox.Name = "SmoothingCheckbox";
             this.SmoothingCheckbox.Size = new System.Drawing.Size(244, 17);
             this.SmoothingCheckbox.TabIndex = 28;
             this.SmoothingCheckbox.Text = "Smoothing (to reduce false postive activation).";
             this.SmoothingCheckbox.UseVisualStyleBackColor = true;
             this.SmoothingCheckbox.CheckedChanged += new System.EventHandler(this.SmoothingCheckbox_CheckedChanged);
+            this.SmoothingCheckbox.MouseLeave += new System.EventHandler(this.SmoothingCheckbox_MouseLeave);
+            this.SmoothingCheckbox.MouseHover += new System.EventHandler(this.SmoothingCheckbox_MouseHover);
             // 
             // TresholdMaxLabel
             // 
             this.TresholdMaxLabel.AutoSize = true;
-            this.TresholdMaxLabel.Location = new System.Drawing.Point(106, 156);
+            this.TresholdMaxLabel.Location = new System.Drawing.Point(103, 259);
             this.TresholdMaxLabel.Name = "TresholdMaxLabel";
             this.TresholdMaxLabel.Size = new System.Drawing.Size(25, 13);
             this.TresholdMaxLabel.TabIndex = 34;
@@ -347,7 +352,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(26, 156);
+            this.label14.Location = new System.Drawing.Point(23, 259);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(80, 13);
             this.label14.TabIndex = 33;
@@ -356,7 +361,7 @@
             // TresholdMaxTrackBar
             // 
             this.TresholdMaxTrackBar.BackColor = System.Drawing.SystemColors.Control;
-            this.TresholdMaxTrackBar.Location = new System.Drawing.Point(26, 172);
+            this.TresholdMaxTrackBar.Location = new System.Drawing.Point(23, 275);
             this.TresholdMaxTrackBar.Maximum = 100;
             this.TresholdMaxTrackBar.Minimum = 1;
             this.TresholdMaxTrackBar.Name = "TresholdMaxTrackBar";
@@ -367,51 +372,97 @@
             this.TresholdMaxTrackBar.MouseLeave += new System.EventHandler(this.TresholdMaxTrackBar_MouseLeave);
             this.TresholdMaxTrackBar.MouseHover += new System.EventHandler(this.TresholdMaxTrackBar_MouseHover);
             // 
-            // KeyPressDurationLabel
+            // WaveModeCheckbox
             // 
-            this.KeyPressDurationLabel.AutoSize = true;
-            this.KeyPressDurationLabel.Location = new System.Drawing.Point(155, 295);
-            this.KeyPressDurationLabel.Name = "KeyPressDurationLabel";
-            this.KeyPressDurationLabel.Size = new System.Drawing.Size(31, 13);
-            this.KeyPressDurationLabel.TabIndex = 37;
-            this.KeyPressDurationLabel.Text = "1000";
+            this.WaveModeCheckbox.AutoSize = true;
+            this.WaveModeCheckbox.Location = new System.Drawing.Point(26, 40);
+            this.WaveModeCheckbox.Name = "WaveModeCheckbox";
+            this.WaveModeCheckbox.Size = new System.Drawing.Size(85, 17);
+            this.WaveModeCheckbox.TabIndex = 35;
+            this.WaveModeCheckbox.Text = "Wave Mode";
+            this.WaveModeCheckbox.UseVisualStyleBackColor = true;
+            this.WaveModeCheckbox.Click += new System.EventHandler(this.WaveModeCheckbox_Click);
+            this.WaveModeCheckbox.MouseLeave += new System.EventHandler(this.WaveModeCheckbox_MouseLeave);
+            this.WaveModeCheckbox.MouseHover += new System.EventHandler(this.WaveModeCheckbox_MouseHover);
+            // 
+            // PeakModeCheckbox
+            // 
+            this.PeakModeCheckbox.AutoSize = true;
+            this.PeakModeCheckbox.Location = new System.Drawing.Point(165, 40);
+            this.PeakModeCheckbox.Name = "PeakModeCheckbox";
+            this.PeakModeCheckbox.Size = new System.Drawing.Size(135, 17);
+            this.PeakModeCheckbox.TabIndex = 36;
+            this.PeakModeCheckbox.Text = "Peak Mode (Old mode)";
+            this.PeakModeCheckbox.UseVisualStyleBackColor = true;
+            this.PeakModeCheckbox.Click += new System.EventHandler(this.PeakModeCheckbox_Click);
+            this.PeakModeCheckbox.MouseLeave += new System.EventHandler(this.PeakModeCheckbox_MouseLeave);
+            this.PeakModeCheckbox.MouseHover += new System.EventHandler(this.PeakModeCheckbox_MouseHover);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(23, 15);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(129, 13);
+            this.label10.TabIndex = 37;
+            this.label10.Text = "Select Listening Methods:";
+            // 
+            // KeyPressDelayLabel
+            // 
+            this.KeyPressDelayLabel.AutoSize = true;
+            this.KeyPressDelayLabel.Location = new System.Drawing.Point(441, 101);
+            this.KeyPressDelayLabel.Name = "KeyPressDelayLabel";
+            this.KeyPressDelayLabel.Size = new System.Drawing.Size(31, 13);
+            this.KeyPressDelayLabel.TabIndex = 40;
+            this.KeyPressDelayLabel.Text = "1000";
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(26, 295);
+            this.label12.Location = new System.Drawing.Point(338, 101);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(125, 13);
-            this.label12.TabIndex = 36;
-            this.label12.Text = "Key Press Duration (ms): ";
+            this.label12.Size = new System.Drawing.Size(84, 13);
+            this.label12.TabIndex = 39;
+            this.label12.Text = "Key Press Delay";
             // 
-            // KeyPressDurationTrackbar
+            // KeyPressDelayTrackBar
             // 
-            this.KeyPressDurationTrackbar.BackColor = System.Drawing.SystemColors.Control;
-            this.KeyPressDurationTrackbar.Location = new System.Drawing.Point(26, 311);
-            this.KeyPressDurationTrackbar.Maximum = 1000;
-            this.KeyPressDurationTrackbar.Minimum = 1;
-            this.KeyPressDurationTrackbar.Name = "KeyPressDurationTrackbar";
-            this.KeyPressDurationTrackbar.Size = new System.Drawing.Size(268, 45);
-            this.KeyPressDurationTrackbar.SmallChange = 10;
-            this.KeyPressDurationTrackbar.TabIndex = 35;
-            this.KeyPressDurationTrackbar.Value = 200;
-            this.KeyPressDurationTrackbar.ValueChanged += new System.EventHandler(this.KeyPressDurationTrackbar_ValueChanged);
+            this.KeyPressDelayTrackBar.BackColor = System.Drawing.SystemColors.Control;
+            this.KeyPressDelayTrackBar.LargeChange = 500;
+            this.KeyPressDelayTrackBar.Location = new System.Drawing.Point(338, 117);
+            this.KeyPressDelayTrackBar.Maximum = 5000;
+            this.KeyPressDelayTrackBar.Minimum = 100;
+            this.KeyPressDelayTrackBar.Name = "KeyPressDelayTrackBar";
+            this.KeyPressDelayTrackBar.Size = new System.Drawing.Size(268, 45);
+            this.KeyPressDelayTrackBar.SmallChange = 100;
+            this.KeyPressDelayTrackBar.TabIndex = 500;
+            this.KeyPressDelayTrackBar.Value = 1000;
+            this.KeyPressDelayTrackBar.ValueChanged += new System.EventHandler(this.KeyPressDelayTrackBar_ValueChanged);
+            // 
+            // SaveButton
+            // 
+            this.SaveButton.Location = new System.Drawing.Point(337, 311);
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.Size = new System.Drawing.Size(272, 23);
+            this.SaveButton.TabIndex = 501;
+            this.SaveButton.Text = "Save Current Settings";
+            this.SaveButton.UseVisualStyleBackColor = true;
+            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(312, 666);
-            this.Controls.Add(this.KeyPressDurationLabel);
-            this.Controls.Add(this.label12);
-            this.Controls.Add(this.KeyPressDurationTrackbar);
+            this.ClientSize = new System.Drawing.Size(631, 397);
+            this.Controls.Add(this.SaveButton);
+            this.Controls.Add(this.SmoothingCheckbox);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.PeakModeCheckbox);
+            this.Controls.Add(this.WaveModeCheckbox);
             this.Controls.Add(this.TresholdMaxLabel);
             this.Controls.Add(this.label14);
-            this.Controls.Add(this.SmoothingCheckbox);
             this.Controls.Add(this.ChunksPerSecondLabel);
-            this.Controls.Add(this.label11);
-            this.Controls.Add(this.ChunksPerSecondTrackBar);
+            this.Controls.Add(this.TimesPerSecondLabel);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.ToggleKeyLabel);
             this.Controls.Add(this.label8);
@@ -437,6 +488,10 @@
             this.Controls.Add(this.AudioDeviceComboBox);
             this.Controls.Add(this.PeakVolumeBar);
             this.Controls.Add(this.TresholdMaxTrackBar);
+            this.Controls.Add(this.KeyPressDelayLabel);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.KeyPressDelayTrackBar);
+            this.Controls.Add(this.ChunksPerSecondTrackBar);
             this.Name = "Form1";
             this.Text = "PressKeyByVoice";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -446,7 +501,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.StatusBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ChunksPerSecondTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TresholdMaxTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.KeyPressDurationTrackbar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.KeyPressDelayTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -479,15 +534,19 @@
         private System.Windows.Forms.TextBox ToggleKeyInputBox;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label ChunksPerSecondLabel;
-        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label TimesPerSecondLabel;
         private System.Windows.Forms.TrackBar ChunksPerSecondTrackBar;
         private System.Windows.Forms.CheckBox SmoothingCheckbox;
         private System.Windows.Forms.Label TresholdMaxLabel;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TrackBar TresholdMaxTrackBar;
-        private System.Windows.Forms.Label KeyPressDurationLabel;
+        private System.Windows.Forms.CheckBox WaveModeCheckbox;
+        private System.Windows.Forms.CheckBox PeakModeCheckbox;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label KeyPressDelayLabel;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TrackBar KeyPressDurationTrackbar;
+        private System.Windows.Forms.TrackBar KeyPressDelayTrackBar;
+        private System.Windows.Forms.Button SaveButton;
     }
 }
 

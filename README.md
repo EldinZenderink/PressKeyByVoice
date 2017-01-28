@@ -11,7 +11,7 @@ Usage:
    5. Set your sensitivity and treshold to your liking.
    6. Have fun :D.
 
-Example/Tutorial video: [YouTube](https://youtu.be/9NwvD_isYZ8)
+Example/Tutorial video(OLD VERSION): [YouTube](https://youtu.be/9NwvD_isYZ8)
 
 ### Tech
 
