@@ -319,7 +319,7 @@
             // 
             this.ChunksPerSecondTrackBar.BackColor = System.Drawing.SystemColors.Control;
             this.ChunksPerSecondTrackBar.Location = new System.Drawing.Point(23, 332);
-            this.ChunksPerSecondTrackBar.Maximum = 100;
+            this.ChunksPerSecondTrackBar.Maximum = 1000;
             this.ChunksPerSecondTrackBar.Minimum = 1;
             this.ChunksPerSecondTrackBar.Name = "ChunksPerSecondTrackBar";
             this.ChunksPerSecondTrackBar.Size = new System.Drawing.Size(268, 45);

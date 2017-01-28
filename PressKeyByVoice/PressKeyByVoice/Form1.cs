@@ -42,6 +42,8 @@ namespace PressKeyByVoice
         public InputSimulator sim = new InputSimulator();
         public SettingsData data = null;
         public bool keyReleaserRunning = false;
+        public int keepingTrack = 0;
+        public int globalCounter = 0;
 
         //all the extern methods imported
 
@@ -205,39 +207,46 @@ namespace PressKeyByVoice
             int o = 0;
             for (int i = 0; i < bytesAsInts.Length; i++)
             {
-                if (bytesAsInts[i] > 0)
+                if(bytesAsInts[i] > 0)
                 {
-                    positiveAmplitudes[o] = bytesAsInts[i];
-                    o++;
+                    o = o + bytesAsInts[i];
                 }
             }
+            keepingTrack++;
+            //int volume = (int)(((((bytesAsInts.Average() / 10) - 10) * 100) - 200) / (1000 / sensitivity));
+            int volume = (int)(Math.Pow((bytesAsInts.Average()), 2) - 10000) / 1000* sensitivity;
+            globalCounter = (globalCounter + volume) / 2;
 
-            int volume = (int)(Math.Pow(((((positiveAmplitudes.Average() / 10) - 10) * 100) - 200), 2) / (1000 / sensitivity));
-
-            if (volume > treshold && volume < maxTreshold)
+            if(keepingTrack > 2)
             {
-                if (selectedProcess != null)
+                if (globalCounter > treshold && globalCounter < maxTreshold)
                 {
-                    if (selectedProcess.Id == GetActiveProcessID())
+                    if (selectedProcess != null)
                     {
-                        if(!keyReleaserRunning)
+                        if (selectedProcess.Id == GetActiveProcessID())
                         {
-                            keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
-                            try { keyReleaser.Start(); } catch { };
-                            
+                            if (!keyReleaserRunning)
+                            {
+                                keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
+                                try { keyReleaser.Start(); } catch { };
+
+                            }
+                            //sim.Keyboard.KeyDown(key);
+                            UpdateKeyPressStatusText("Key " + keyToBePressed.ToString() + " is currently being pressed!");
                         }
-                        //sim.Keyboard.KeyDown(key);
-                        UpdateKeyPressStatusText("Key " + keyToBePressed.ToString() + " is currently being pressed!");
                     }
                 }
+                else
+                {
+                    UpdateKeyPressStatusText("Key " + keyToBePressed.ToString() + " is not being pressed!");
+                    // sim.Keyboard.KeyUp(key);
+                }
+
+                UpdatePeakVolumeBar(globalCounter);
+                keepingTrack = 0;
+                globalCounter = 0;
             }
-            else
-            {
-                UpdateKeyPressStatusText("Key " + keyToBePressed.ToString() + " is not being pressed!");
-               // sim.Keyboard.KeyUp(key);
-            }
-            
-            UpdatePeakVolumeBar(volume);
+           
         }
 
         private void UpdateKeyPressStatusText(string text)
@@ -363,11 +372,15 @@ namespace PressKeyByVoice
                         }
                     } else if (waveMode)
                     {
-                        if(volume < 101) {
+                        if(volume < 101 && volume > -1) {
 
                             PeakVolumeLabel.Text = volume.ToString();
                             PeakVolumeBar.Value = volume;
-                        } else
+                        } else if(volume < 1)
+                        {
+                            PeakVolumeLabel.Text = volume.ToString();
+                            PeakVolumeBar.Value = 0;
+                        } else 
                         {
 
                             PeakVolumeLabel.Text = volume.ToString();
@@ -879,6 +892,27 @@ namespace PressKeyByVoice
             data.SaveData();
             MessageBox.Show("Succesfully saved your settings!");
         }
+
+        public int GetMaxPartialIterate(int[] arr)
+        {
+            var max = arr[0];
+            var idx = 0;
+            for (int i = arr.Length / 2; i < arr.Length; i++)
+            {
+                if (arr[i] > max)
+                {
+                    max = arr[i];
+                }
+
+                if (arr[idx] > max)
+                {
+                    max = arr[idx];
+                }
+                idx++;
+            }
+            return max;
+        }
+
     }
 
 
