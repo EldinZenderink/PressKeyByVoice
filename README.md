@@ -10,6 +10,10 @@ Usage:
    4. Select the process/program that needs to receive the keypress.
    5. Set your sensitivity and treshold to your liking.
    6. Have fun :D.
+   
+Optionally:
+ - Set the key you want to be pressed (only one key, no combinations)
+ - Set the toggle hot key for enabeling and disabling the program (even when it's running in the background).
 
 Example/Tutorial video(OLD VERSION): [YouTube](https://youtu.be/9NwvD_isYZ8)
 
