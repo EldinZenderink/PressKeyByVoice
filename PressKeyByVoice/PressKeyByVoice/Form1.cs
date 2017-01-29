@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using NAudio.CoreAudioApi;
 using WindowsInput;
@@ -191,8 +190,9 @@ namespace PressKeyByVoice
                     {
                     }
                 }
+                waveDeviceId = index;
                 sourceStream = new WaveInEvent();
-                sourceStream.DeviceNumber = index;
+                sourceStream.DeviceNumber = waveDeviceId;
                 sourceStream.WaveFormat = new WaveFormat(44100, WaveIn.GetCapabilities(index).Channels);
                 sourceStream.DataAvailable += new EventHandler<WaveInEventArgs>(sourceStream_DataAvailable);
                 sourceStream.StartRecording();
@@ -202,24 +202,24 @@ namespace PressKeyByVoice
 
         private void sourceStream_DataAvailable(object sender, WaveInEventArgs e)
         {
-            int[] bytesAsInts = Array.ConvertAll(e.Buffer, c => (int)c);
-            int[] positiveAmplitudes = new int[bytesAsInts.Length];
-            int o = 0;
-            for (int i = 0; i < bytesAsInts.Length; i++)
-            {
-                if(bytesAsInts[i] > 0)
-                {
-                    o = o + bytesAsInts[i];
-                }
-            }
-            keepingTrack++;
-            //int volume = (int)(((((bytesAsInts.Average() / 10) - 10) * 100) - 200) / (1000 / sensitivity));
-            int volume = (int)(Math.Pow((bytesAsInts.Average()), 2) - 10000) / 1000* sensitivity;
-            globalCounter = (globalCounter + volume) / 2;
+            float[] amplitudes = new float[e.BytesRecorded];
+            byte[] buffer = e.Buffer;
 
-            if(keepingTrack > 2)
+            int counter = 0;
+            for (int index = 0; index < e.BytesRecorded; index += 2)
             {
-                if (globalCounter > treshold && globalCounter < maxTreshold)
+                short sample = (short)((buffer[index + 1] << 8) |
+                                        buffer[index + 0]);
+                float sample32 = sample / 32768f;
+                amplitudes[counter] = sample32;
+                counter++;
+            }
+            //int volume = (int)(((((bytesAsInts.Average() / 10) - 10) * 100) - 200) / (1000 / sensitivity));
+            try
+            {
+                int volume = (int)(amplitudes.Max() * 10 * sensitivity);
+
+                if (volume > treshold && volume < maxTreshold)
                 {
                     if (selectedProcess != null)
                     {
@@ -231,21 +231,15 @@ namespace PressKeyByVoice
                                 try { keyReleaser.Start(); } catch { };
 
                             }
-                            //sim.Keyboard.KeyDown(key);
-                            UpdateKeyPressStatusText("Key " + keyToBePressed.ToString() + " is currently being pressed!");
                         }
                     }
                 }
-                else
-                {
-                    UpdateKeyPressStatusText("Key " + keyToBePressed.ToString() + " is not being pressed!");
-                    // sim.Keyboard.KeyUp(key);
-                }
-
-                UpdatePeakVolumeBar(globalCounter);
-                keepingTrack = 0;
-                globalCounter = 0;
+                UpdatePeakVolumeBar(volume);
+            } catch(Exception ex)
+            {
+                UpdateDebugText("Couldnt update volume bar:" + ex.ToString());
             }
+          
            
         }
 
