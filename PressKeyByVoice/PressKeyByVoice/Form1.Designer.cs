@@ -52,9 +52,6 @@
             this.label9 = new System.Windows.Forms.Label();
             this.ToggleKeyInputBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.ChunksPerSecondLabel = new System.Windows.Forms.Label();
-            this.TimesPerSecondLabel = new System.Windows.Forms.Label();
-            this.ChunksPerSecondTrackBar = new System.Windows.Forms.TrackBar();
             this.SmoothingCheckbox = new System.Windows.Forms.CheckBox();
             this.TresholdMaxLabel = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -66,12 +63,19 @@
             this.label12 = new System.Windows.Forms.Label();
             this.KeyPressDelayTrackBar = new System.Windows.Forms.TrackBar();
             this.SaveButton = new System.Windows.Forms.Button();
+            this.ChunksPerSecondTrackBar = new System.Windows.Forms.TrackBar();
+            this.TimesPerSecondLabel = new System.Windows.Forms.Label();
+            this.ChunksPerSecondLabel = new System.Windows.Forms.Label();
+            this.BufferLabel = new System.Windows.Forms.Label();
+            this.BufferTimesLabel = new System.Windows.Forms.Label();
+            this.BufferTrackBar = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TresholdTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StatusBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ChunksPerSecondTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TresholdMaxTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.KeyPressDelayTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ChunksPerSecondTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BufferTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // PeakVolumeBar
@@ -297,40 +301,10 @@
             this.label7.TabIndex = 24;
             this.label7.Text = "Debug textbox, ignore this...";
             // 
-            // ChunksPerSecondLabel
-            // 
-            this.ChunksPerSecondLabel.AutoSize = true;
-            this.ChunksPerSecondLabel.Location = new System.Drawing.Point(126, 316);
-            this.ChunksPerSecondLabel.Name = "ChunksPerSecondLabel";
-            this.ChunksPerSecondLabel.Size = new System.Drawing.Size(25, 13);
-            this.ChunksPerSecondLabel.TabIndex = 27;
-            this.ChunksPerSecondLabel.Text = "100";
-            // 
-            // TimesPerSecondLabel
-            // 
-            this.TimesPerSecondLabel.AutoSize = true;
-            this.TimesPerSecondLabel.Location = new System.Drawing.Point(23, 316);
-            this.TimesPerSecondLabel.Name = "TimesPerSecondLabel";
-            this.TimesPerSecondLabel.Size = new System.Drawing.Size(97, 13);
-            this.TimesPerSecondLabel.TabIndex = 26;
-            this.TimesPerSecondLabel.Text = "Times Per Second:";
-            // 
-            // ChunksPerSecondTrackBar
-            // 
-            this.ChunksPerSecondTrackBar.BackColor = System.Drawing.SystemColors.Control;
-            this.ChunksPerSecondTrackBar.Location = new System.Drawing.Point(23, 332);
-            this.ChunksPerSecondTrackBar.Maximum = 1000;
-            this.ChunksPerSecondTrackBar.Minimum = 1;
-            this.ChunksPerSecondTrackBar.Name = "ChunksPerSecondTrackBar";
-            this.ChunksPerSecondTrackBar.Size = new System.Drawing.Size(268, 45);
-            this.ChunksPerSecondTrackBar.TabIndex = 25;
-            this.ChunksPerSecondTrackBar.Value = 100;
-            this.ChunksPerSecondTrackBar.ValueChanged += new System.EventHandler(this.ChunksPerSecondTrackBar_ValueChanged);
-            // 
             // SmoothingCheckbox
             // 
             this.SmoothingCheckbox.AutoSize = true;
-            this.SmoothingCheckbox.Location = new System.Drawing.Point(26, 372);
+            this.SmoothingCheckbox.Location = new System.Drawing.Point(26, 383);
             this.SmoothingCheckbox.Name = "SmoothingCheckbox";
             this.SmoothingCheckbox.Size = new System.Drawing.Size(244, 17);
             this.SmoothingCheckbox.TabIndex = 28;
@@ -449,11 +423,73 @@
             this.SaveButton.UseVisualStyleBackColor = true;
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
+            // ChunksPerSecondTrackBar
+            // 
+            this.ChunksPerSecondTrackBar.BackColor = System.Drawing.SystemColors.Control;
+            this.ChunksPerSecondTrackBar.Location = new System.Drawing.Point(23, 332);
+            this.ChunksPerSecondTrackBar.Maximum = 1000;
+            this.ChunksPerSecondTrackBar.Minimum = 1;
+            this.ChunksPerSecondTrackBar.Name = "ChunksPerSecondTrackBar";
+            this.ChunksPerSecondTrackBar.Size = new System.Drawing.Size(268, 45);
+            this.ChunksPerSecondTrackBar.TabIndex = 25;
+            this.ChunksPerSecondTrackBar.Value = 100;
+            this.ChunksPerSecondTrackBar.ValueChanged += new System.EventHandler(this.ChunksPerSecondTrackBar_ValueChanged);
+            // 
+            // TimesPerSecondLabel
+            // 
+            this.TimesPerSecondLabel.AutoSize = true;
+            this.TimesPerSecondLabel.Location = new System.Drawing.Point(23, 316);
+            this.TimesPerSecondLabel.Name = "TimesPerSecondLabel";
+            this.TimesPerSecondLabel.Size = new System.Drawing.Size(97, 13);
+            this.TimesPerSecondLabel.TabIndex = 26;
+            this.TimesPerSecondLabel.Text = "Times Per Second:";
+            // 
+            // ChunksPerSecondLabel
+            // 
+            this.ChunksPerSecondLabel.AutoSize = true;
+            this.ChunksPerSecondLabel.Location = new System.Drawing.Point(126, 316);
+            this.ChunksPerSecondLabel.Name = "ChunksPerSecondLabel";
+            this.ChunksPerSecondLabel.Size = new System.Drawing.Size(25, 13);
+            this.ChunksPerSecondLabel.TabIndex = 27;
+            this.ChunksPerSecondLabel.Text = "100";
+            // 
+            // BufferLabel
+            // 
+            this.BufferLabel.AutoSize = true;
+            this.BufferLabel.Location = new System.Drawing.Point(126, 316);
+            this.BufferLabel.Name = "BufferLabel";
+            this.BufferLabel.Size = new System.Drawing.Size(13, 13);
+            this.BufferLabel.TabIndex = 504;
+            this.BufferLabel.Text = "1";
+            // 
+            // BufferTimesLabel
+            // 
+            this.BufferTimesLabel.AutoSize = true;
+            this.BufferTimesLabel.Location = new System.Drawing.Point(23, 316);
+            this.BufferTimesLabel.Name = "BufferTimesLabel";
+            this.BufferTimesLabel.Size = new System.Drawing.Size(62, 13);
+            this.BufferTimesLabel.TabIndex = 503;
+            this.BufferTimesLabel.Text = "Buffer times";
+            // 
+            // BufferTrackBar
+            // 
+            this.BufferTrackBar.BackColor = System.Drawing.SystemColors.Control;
+            this.BufferTrackBar.Location = new System.Drawing.Point(23, 332);
+            this.BufferTrackBar.Minimum = 1;
+            this.BufferTrackBar.Name = "BufferTrackBar";
+            this.BufferTrackBar.Size = new System.Drawing.Size(268, 45);
+            this.BufferTrackBar.TabIndex = 502;
+            this.BufferTrackBar.Value = 1;
+            this.BufferTrackBar.ValueChanged += new System.EventHandler(this.BufferTrackBar_ValueChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(631, 397);
+            this.ClientSize = new System.Drawing.Size(631, 402);
+            this.Controls.Add(this.BufferLabel);
+            this.Controls.Add(this.BufferTimesLabel);
+            this.Controls.Add(this.BufferTrackBar);
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.SmoothingCheckbox);
             this.Controls.Add(this.label10);
@@ -499,9 +535,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TresholdTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.StatusBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ChunksPerSecondTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.TresholdMaxTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.KeyPressDelayTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ChunksPerSecondTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BufferTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -533,9 +570,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox ToggleKeyInputBox;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label ChunksPerSecondLabel;
-        private System.Windows.Forms.Label TimesPerSecondLabel;
-        private System.Windows.Forms.TrackBar ChunksPerSecondTrackBar;
         private System.Windows.Forms.CheckBox SmoothingCheckbox;
         private System.Windows.Forms.Label TresholdMaxLabel;
         private System.Windows.Forms.Label label14;
@@ -547,6 +581,12 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TrackBar KeyPressDelayTrackBar;
         private System.Windows.Forms.Button SaveButton;
+        private System.Windows.Forms.TrackBar ChunksPerSecondTrackBar;
+        private System.Windows.Forms.Label TimesPerSecondLabel;
+        private System.Windows.Forms.Label ChunksPerSecondLabel;
+        private System.Windows.Forms.Label BufferLabel;
+        private System.Windows.Forms.Label BufferTimesLabel;
+        private System.Windows.Forms.TrackBar BufferTrackBar;
     }
 }
 

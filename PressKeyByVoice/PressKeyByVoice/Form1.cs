@@ -43,6 +43,7 @@ namespace PressKeyByVoice
         public bool keyReleaserRunning = false;
         public int keepingTrack = 0;
         public int globalCounter = 0;
+        public int globalBuffer = 1;
 
         //all the extern methods imported
 
@@ -74,6 +75,7 @@ namespace PressKeyByVoice
             smoothing = data.smoothing;
             waveMode = data.waveMode;
             peakMode = data.peakMode;
+            globalBuffer = data.globalBuffer;
 
             int val = keyToBePressed;
             foreach (VirtualKeyCode vk in Enum.GetValues(typeof(VirtualKeyCode)))
@@ -95,6 +97,8 @@ namespace PressKeyByVoice
             KeyPressDelayLabel.Text = keyPressDuration.ToString();
             KeyPressDelayTrackBar.Value = keyPressDuration;
             SmoothingCheckbox.Checked = smoothing;
+            BufferLabel.Text = globalBuffer.ToString();
+            BufferTrackBar.Value = globalBuffer;
             CurrentKey.Text = char.ToLower(keyToBePressed).ToString();
             KeyTextBox.Text = char.ToLower(keyToBePressed).ToString();
             ToggleKeyLabel.Text = ((VirtualKeyCode)DisableEnableKey).ToString();
@@ -130,12 +134,21 @@ namespace PressKeyByVoice
             WaveModeCheckbox.Checked = waveMode;
             PeakModeCheckbox.Checked = peakMode;
 
-            ChunksPerSecondTrackBar.Enabled = false;
-            ChunksPerSecondTrackBar.Visible = false;
-            ChunksPerSecondLabel.Visible = false;
-            TimesPerSecondLabel.Visible = false;
-            SmoothingCheckbox.Enabled = false;
-            SmoothingCheckbox.Visible = false;
+            if (waveMode)
+            {
+                ChunksPerSecondTrackBar.Enabled = false;
+                ChunksPerSecondTrackBar.Visible = false;
+                ChunksPerSecondLabel.Visible = false;
+                TimesPerSecondLabel.Visible = false;
+                SmoothingCheckbox.Enabled = false;
+                SmoothingCheckbox.Visible = false;
+            } else
+            {
+                BufferLabel.Visible = false;
+                BufferTrackBar.Visible = false;
+                BufferTimesLabel.Visible = false;
+                BufferTrackBar.Enabled = false;
+            }
             
 
             //Get all process currently running:
@@ -193,7 +206,7 @@ namespace PressKeyByVoice
                 waveDeviceId = index;
                 sourceStream = new WaveInEvent();
                 sourceStream.DeviceNumber = waveDeviceId;
-                sourceStream.WaveFormat = new WaveFormat(44100, WaveIn.GetCapabilities(index).Channels);
+                sourceStream.WaveFormat = new WaveFormat(48000, WaveIn.GetCapabilities(index).Channels);
                 sourceStream.DataAvailable += new EventHandler<WaveInEventArgs>(sourceStream_DataAvailable);
                 sourceStream.StartRecording();
                 DebugTextBox.Text = "Selected device: " + index;
@@ -202,45 +215,58 @@ namespace PressKeyByVoice
 
         private void sourceStream_DataAvailable(object sender, WaveInEventArgs e)
         {
-            float[] amplitudes = new float[e.BytesRecorded];
-            byte[] buffer = e.Buffer;
-
-            int counter = 0;
-            for (int index = 0; index < e.BytesRecorded; index += 2)
+           
+            if (!keyReleaserRunning)
             {
-                short sample = (short)((buffer[index + 1] << 8) |
-                                        buffer[index + 0]);
-                float sample32 = sample / 32768f;
-                amplitudes[counter] = sample32;
-                counter++;
-            }
-            //int volume = (int)(((((bytesAsInts.Average() / 10) - 10) * 100) - 200) / (1000 / sensitivity));
-            try
-            {
-                int volume = (int)(amplitudes.Max() * 10 * sensitivity);
+                float[] amplitudes = new float[e.BytesRecorded];
+                byte[] buffer = e.Buffer;
 
-                if (volume > treshold && volume < maxTreshold)
+                int counter = 0;
+                for (int index = 0; index < e.BytesRecorded; index += 2)
                 {
-                    if (selectedProcess != null)
+                    short sample = (short)((buffer[index + 1] << 8) |
+                                            buffer[index + 0]);
+                    float sample32 = sample / 32768f;
+                    amplitudes[counter] = sample32;
+                    counter++;
+                }
+                //int volume = (int)(((((bytesAsInts.Average() / 10) - 10) * 100) - 200) / (1000 / sensitivity));
+                try
+                {
+                    int volume = (int)(amplitudes.Max() * 10 * sensitivity);
+                    keepingTrack = keepingTrack + volume;
+                    if(globalCounter > (globalBuffer - 1))
                     {
-                        if (selectedProcess.Id == GetActiveProcessID())
+                        volume = keepingTrack / globalBuffer;
+                        if (volume > treshold && volume < maxTreshold)
                         {
-                            if (!keyReleaserRunning)
+                            if (selectedProcess != null)
                             {
-                                keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
-                                try { keyReleaser.Start(); } catch { };
-
+                                if (selectedProcess.Id == GetActiveProcessID())
+                                {
+                                    /* keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
+                                     try { keyReleaser.Start(); } catch { };*/
+                                    DateTime _desired = DateTime.Now.AddMilliseconds(keyPressDuration);
+                                    while (DateTime.Now < _desired)
+                                    {
+                                        sim.Keyboard.KeyDown(key);
+                                        Thread.Sleep(1);
+                                    }
+                                    UpdateStatusBoxColor(Color.Red);
+                                }
                             }
                         }
+                        UpdatePeakVolumeBar(volume);
+                        keepingTrack = 0;
+                        globalCounter = 0;
                     }
+                   
+                    globalCounter++;
+                } catch(Exception ex)
+                {
+                    UpdateDebugText("Couldnt update volume bar:" + ex.ToString());
                 }
-                UpdatePeakVolumeBar(volume);
-            } catch(Exception ex)
-            {
-                UpdateDebugText("Couldnt update volume bar:" + ex.ToString());
             }
-          
-           
         }
 
         private void UpdateKeyPressStatusText(string text)
@@ -338,9 +364,8 @@ namespace PressKeyByVoice
                                 {
                                     if (selectedProcess.Id == GetActiveProcessID())
                                     {
-                                        /*Thread keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
-                                        keyReleaser.Start();*/
-                                        sim.Keyboard.KeyDown(key);
+                                        Thread keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
+                                        keyReleaser.Start();
                                         KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
                                     }
                                 }
@@ -658,6 +683,13 @@ namespace PressKeyByVoice
             ChunksPerSecondLabel.Text = ChunksPerSecondTrackBar.Value.ToString();
         }
 
+
+        private void BufferTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            globalBuffer = BufferTrackBar.Value;
+            BufferLabel.Text = globalBuffer.ToString();
+        }
+
         private void SmoothingCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (SmoothingCheckbox.Checked)
@@ -709,6 +741,10 @@ namespace PressKeyByVoice
             TimesPerSecondLabel.Visible = false;
             SmoothingCheckbox.Enabled = false;
             SmoothingCheckbox.Visible = false;
+            BufferLabel.Visible = true;
+            BufferTrackBar.Visible = true;
+            BufferTimesLabel.Visible = true;
+            BufferTrackBar.Enabled = true;
             waveMode = WaveModeCheckbox.Checked;
 
             int waveInDevices = WaveIn.DeviceCount;
@@ -742,6 +778,10 @@ namespace PressKeyByVoice
             TimesPerSecondLabel.Visible = true;
             SmoothingCheckbox.Enabled = true;
             SmoothingCheckbox.Visible = true;
+            BufferLabel.Visible = false;
+            BufferTrackBar.Visible = false;
+            BufferTimesLabel.Visible = false;
+            BufferTrackBar.Enabled = false;
             peakMode = PeakModeCheckbox.Checked;
 
 
@@ -881,6 +921,7 @@ namespace PressKeyByVoice
             data.peakDeviceId = peakDeviceId;
             data.keyToBePressed = keyToBePressed;
             data.smoothing = smoothing;
+            data.globalBuffer = globalBuffer;
             data.waveMode = waveMode;
             data.peakMode = peakMode;
             data.SaveData();

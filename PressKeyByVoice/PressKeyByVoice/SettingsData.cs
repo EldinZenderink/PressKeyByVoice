@@ -23,15 +23,16 @@ namespace PressKeyByVoice
         public int keyPressDuration = 1000;
         public int waveDeviceId = 0;
         public int peakDeviceId = 0;
+        public int globalBuffer = 1;
         public char keyToBePressed = (char)86;
         public bool smoothing = false;
         public bool waveMode = true;
         public bool peakMode = false;
-        public string settingsPath = "\\Settings.ini";
+        public string settingsPath = "\\SettingsV1_4.ini";
 
         public SettingsData()
         {
-            settingsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\PressKeyByVoice\\Settings.ini";
+            settingsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\PressKeyByVoice\\SettingsV1_4.ini";
 
             if(!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\PressKeyByVoice"))
             {
@@ -41,7 +42,7 @@ namespace PressKeyByVoice
             {
                 //File.Create(settingsPath);
                 int character = keyToBePressed;
-                string defaultSettings = @"sensitivity = " + sensitivity.ToString() + ";treshold = " + treshold.ToString() + ";maxTreshold = " + maxTreshold.ToString() + ";recordSpeed = " + recordSpeed.ToString() + ";DisableEnableKey = " + DisableEnableKey.ToString() + ";keyPressDuration = " + keyPressDuration.ToString() + ";waveDeviceId = " + waveDeviceId.ToString() + ";peakDeviceId = " + peakDeviceId.ToString() + ";keyToBePressed = " + character.ToString() + ";smoothing = " + smoothing.ToString() + ";waveMode = " + waveMode.ToString() + ";peakMode = " + peakMode.ToString() + ";";
+                string defaultSettings = @"sensitivity = " + sensitivity.ToString() + ";treshold = " + treshold.ToString() + ";maxTreshold = " + maxTreshold.ToString() + ";recordSpeed = " + recordSpeed.ToString() + ";DisableEnableKey = " + DisableEnableKey.ToString() + ";keyPressDuration = " + keyPressDuration.ToString() + ";waveDeviceId = " + waveDeviceId.ToString() + ";peakDeviceId = " + peakDeviceId.ToString() + ";keyToBePressed = " + character.ToString() + ";smoothing = " + smoothing.ToString() + ";waveMode = " + waveMode.ToString() + ";peakMode = " + peakMode.ToString() + ";buffer = " + globalBuffer.ToString() + ";";
 
                 TextWriter tw = new StreamWriter(settingsPath, true);
                 tw.WriteLine(defaultSettings);
@@ -149,6 +150,12 @@ namespace PressKeyByVoice
                             parseSucces = false;
                         }
                     }
+                    else if (setting.Contains("buffer"))
+                    {
+                        int value = 0;
+                        parseSucces = int.TryParse(setting.Split('=')[1].Trim(), out value);
+                        globalBuffer = value;
+                    }
 
                     if (!parseSucces)
                     {
@@ -172,7 +179,7 @@ namespace PressKeyByVoice
             {
                 File.CreateText(settingsPath);
                 int character = keyToBePressed;
-                string defaultSettings = @"sensitivity = " + sensitivity.ToString() + ";treshold = " + treshold.ToString() + ";maxTreshold = " + maxTreshold.ToString() + ";recordSpeed = " + recordSpeed.ToString() + ";DisableEnableKey = " + DisableEnableKey.ToString() + ";keyPressDuration = " + keyPressDuration.ToString() + ";waveDeviceId = " + waveDeviceId.ToString() + ";peakDeviceId = " + peakDeviceId.ToString() + ";keyToBePressed = " + character.ToString() + ";smoothing = " + smoothing.ToString() + ";waveMode = " + waveMode.ToString() + ";peakMode = " + peakMode.ToString() + ";";
+                string defaultSettings = @"sensitivity = " + sensitivity.ToString() + ";treshold = " + treshold.ToString() + ";maxTreshold = " + maxTreshold.ToString() + ";recordSpeed = " + recordSpeed.ToString() + ";DisableEnableKey = " + DisableEnableKey.ToString() + ";keyPressDuration = " + keyPressDuration.ToString() + ";waveDeviceId = " + waveDeviceId.ToString() + ";peakDeviceId = " + peakDeviceId.ToString() + ";keyToBePressed = " + character.ToString() + ";smoothing = " + smoothing.ToString() + ";waveMode = " + waveMode.ToString() + ";peakMode = " + peakMode.ToString() + ";buffer = " + globalBuffer.ToString() + ";";
                 TextWriter tw = new StreamWriter(settingsPath);
                 tw.WriteLine(defaultSettings);
                 tw.Close();
@@ -181,7 +188,7 @@ namespace PressKeyByVoice
             {
 
                 int character = keyToBePressed;
-                string defaultSettings = @"sensitivity = " + sensitivity.ToString() + ";treshold = " + treshold.ToString() + ";maxTreshold = " + maxTreshold.ToString() + ";recordSpeed = " + recordSpeed.ToString() + ";DisableEnableKey = " + DisableEnableKey.ToString() + ";keyPressDuration = " + keyPressDuration.ToString() + ";waveDeviceId = " + waveDeviceId.ToString() + ";peakDeviceId = " + peakDeviceId.ToString() + ";keyToBePressed = " + character.ToString() + ";smoothing = " + smoothing.ToString() + ";waveMode = " + waveMode.ToString() + ";peakMode = " + peakMode.ToString() + ";";
+                string defaultSettings = @"sensitivity = " + sensitivity.ToString() + ";treshold = " + treshold.ToString() + ";maxTreshold = " + maxTreshold.ToString() + ";recordSpeed = " + recordSpeed.ToString() + ";DisableEnableKey = " + DisableEnableKey.ToString() + ";keyPressDuration = " + keyPressDuration.ToString() + ";waveDeviceId = " + waveDeviceId.ToString() + ";peakDeviceId = " + peakDeviceId.ToString() + ";keyToBePressed = " + character.ToString() + ";smoothing = " + smoothing.ToString() + ";waveMode = " + waveMode.ToString() + ";peakMode = " + peakMode.ToString() + ";buffer = " + globalBuffer.ToString() + ";";
                 TextWriter tw = new StreamWriter(settingsPath);
                 tw.WriteLine(defaultSettings);
                 tw.Close();
