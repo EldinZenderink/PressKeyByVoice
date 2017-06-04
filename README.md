@@ -1,6 +1,5 @@
 # PressKeyByVoice
 
-
 PressKeyByVoice is a simplistic application that allows you to assign a keyboard key(character) to be pressed when the audio volume reaches a certain treshold. 
 
 Usage:
@@ -16,6 +15,9 @@ Optionally:
  - Set the toggle hot key for enabeling and disabling the program (even when it's running in the background).
 
 Example/Tutorial video(OLD VERSION): [YouTube](https://youtu.be/9NwvD_isYZ8)
+
+###
+Latest version (1.5): [Version 1.5](https://github.com/EldinZenderink/PressKeyByVoice/releases/tag/v1.5)
 
 ### Tech
 
