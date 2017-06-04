@@ -65,10 +65,10 @@
             this.SaveButton = new System.Windows.Forms.Button();
             this.ChunksPerSecondTrackBar = new System.Windows.Forms.TrackBar();
             this.TimesPerSecondLabel = new System.Windows.Forms.Label();
-            this.ChunksPerSecondLabel = new System.Windows.Forms.Label();
             this.BufferLabel = new System.Windows.Forms.Label();
             this.BufferTimesLabel = new System.Windows.Forms.Label();
             this.BufferTrackBar = new System.Windows.Forms.TrackBar();
+            this.ChunksPerSecondLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SensitivityTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TresholdTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StatusBox)).BeginInit();
@@ -82,13 +82,13 @@
             // 
             this.PeakVolumeBar.Location = new System.Drawing.Point(26, 72);
             this.PeakVolumeBar.Name = "PeakVolumeBar";
-            this.PeakVolumeBar.Size = new System.Drawing.Size(268, 47);
+            this.PeakVolumeBar.Size = new System.Drawing.Size(530, 47);
             this.PeakVolumeBar.TabIndex = 0;
             // 
             // AudioDeviceComboBox
             // 
             this.AudioDeviceComboBox.FormattingEnabled = true;
-            this.AudioDeviceComboBox.Location = new System.Drawing.Point(338, 31);
+            this.AudioDeviceComboBox.Location = new System.Drawing.Point(574, 40);
             this.AudioDeviceComboBox.Name = "AudioDeviceComboBox";
             this.AudioDeviceComboBox.Size = new System.Drawing.Size(271, 21);
             this.AudioDeviceComboBox.TabIndex = 1;
@@ -98,7 +98,7 @@
             // ProgramComboBox
             // 
             this.ProgramComboBox.FormattingEnabled = true;
-            this.ProgramComboBox.Location = new System.Drawing.Point(338, 72);
+            this.ProgramComboBox.Location = new System.Drawing.Point(574, 81);
             this.ProgramComboBox.Name = "ProgramComboBox";
             this.ProgramComboBox.Size = new System.Drawing.Size(271, 21);
             this.ProgramComboBox.TabIndex = 2;
@@ -108,7 +108,7 @@
             // 
             // KeyTextBox
             // 
-            this.KeyTextBox.Location = new System.Drawing.Point(338, 181);
+            this.KeyTextBox.Location = new System.Drawing.Point(574, 190);
             this.KeyTextBox.Name = "KeyTextBox";
             this.KeyTextBox.Size = new System.Drawing.Size(142, 20);
             this.KeyTextBox.TabIndex = 3;
@@ -117,7 +117,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(338, 15);
+            this.label1.Location = new System.Drawing.Point(574, 24);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(74, 13);
             this.label1.TabIndex = 5;
@@ -126,7 +126,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(338, 56);
+            this.label2.Location = new System.Drawing.Point(574, 65);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(46, 13);
             this.label2.TabIndex = 6;
@@ -135,7 +135,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(338, 165);
+            this.label3.Location = new System.Drawing.Point(574, 174);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(233, 13);
             this.label3.TabIndex = 7;
@@ -144,7 +144,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(495, 184);
+            this.label4.Location = new System.Drawing.Point(731, 193);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(65, 13);
             this.label4.TabIndex = 8;
@@ -153,7 +153,7 @@
             // CurrentKey
             // 
             this.CurrentKey.AutoSize = true;
-            this.CurrentKey.Location = new System.Drawing.Point(566, 184);
+            this.CurrentKey.Location = new System.Drawing.Point(802, 193);
             this.CurrentKey.Name = "CurrentKey";
             this.CurrentKey.Size = new System.Drawing.Size(13, 13);
             this.CurrentKey.TabIndex = 9;
@@ -165,7 +165,7 @@
             this.SensitivityTrackBar.Maximum = 100;
             this.SensitivityTrackBar.Minimum = 1;
             this.SensitivityTrackBar.Name = "SensitivityTrackBar";
-            this.SensitivityTrackBar.Size = new System.Drawing.Size(268, 45);
+            this.SensitivityTrackBar.Size = new System.Drawing.Size(533, 45);
             this.SensitivityTrackBar.TabIndex = 10;
             this.SensitivityTrackBar.Value = 1;
             this.SensitivityTrackBar.ValueChanged += new System.EventHandler(this.SensitivityTrackBar_ValueChanged);
@@ -177,7 +177,7 @@
             this.TresholdTrackBar.Maximum = 100;
             this.TresholdTrackBar.Minimum = 1;
             this.TresholdTrackBar.Name = "TresholdTrackBar";
-            this.TresholdTrackBar.Size = new System.Drawing.Size(268, 45);
+            this.TresholdTrackBar.Size = new System.Drawing.Size(533, 45);
             this.TresholdTrackBar.TabIndex = 11;
             this.TresholdTrackBar.Value = 100;
             this.TresholdTrackBar.ValueChanged += new System.EventHandler(this.TresholdTrackBar_ValueChanged);
@@ -224,7 +224,7 @@
             // 
             this.PeakVolumeLabel.AutoSize = true;
             this.PeakVolumeLabel.BackColor = System.Drawing.Color.Transparent;
-            this.PeakVolumeLabel.Location = new System.Drawing.Point(155, 89);
+            this.PeakVolumeLabel.Location = new System.Drawing.Point(287, 89);
             this.PeakVolumeLabel.Name = "PeakVolumeLabel";
             this.PeakVolumeLabel.Size = new System.Drawing.Size(13, 13);
             this.PeakVolumeLabel.TabIndex = 16;
@@ -232,7 +232,7 @@
             // 
             // DebugTextBox
             // 
-            this.DebugTextBox.Location = new System.Drawing.Point(338, 275);
+            this.DebugTextBox.Location = new System.Drawing.Point(574, 284);
             this.DebugTextBox.Name = "DebugTextBox";
             this.DebugTextBox.Size = new System.Drawing.Size(271, 20);
             this.DebugTextBox.TabIndex = 17;
@@ -242,16 +242,16 @@
             this.StatusBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.StatusBox.Location = new System.Drawing.Point(26, 125);
             this.StatusBox.Name = "StatusBox";
-            this.StatusBox.Size = new System.Drawing.Size(268, 37);
+            this.StatusBox.Size = new System.Drawing.Size(530, 37);
             this.StatusBox.TabIndex = 18;
             this.StatusBox.TabStop = false;
             // 
             // KeyPressStatusLabel
             // 
             this.KeyPressStatusLabel.AutoSize = true;
-            this.KeyPressStatusLabel.BackColor = System.Drawing.Color.Transparent;
+            this.KeyPressStatusLabel.BackColor = System.Drawing.SystemColors.Window;
             this.KeyPressStatusLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.KeyPressStatusLabel.Location = new System.Drawing.Point(92, 137);
+            this.KeyPressStatusLabel.Location = new System.Drawing.Point(136, 137);
             this.KeyPressStatusLabel.Name = "KeyPressStatusLabel";
             this.KeyPressStatusLabel.Size = new System.Drawing.Size(134, 13);
             this.KeyPressStatusLabel.TabIndex = 19;
@@ -260,7 +260,7 @@
             // ToggleKeyLabel
             // 
             this.ToggleKeyLabel.AutoSize = true;
-            this.ToggleKeyLabel.Location = new System.Drawing.Point(566, 227);
+            this.ToggleKeyLabel.Location = new System.Drawing.Point(802, 236);
             this.ToggleKeyLabel.Name = "ToggleKeyLabel";
             this.ToggleKeyLabel.Size = new System.Drawing.Size(19, 13);
             this.ToggleKeyLabel.TabIndex = 23;
@@ -269,7 +269,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(495, 227);
+            this.label8.Location = new System.Drawing.Point(731, 236);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(65, 13);
             this.label8.TabIndex = 22;
@@ -278,7 +278,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(338, 208);
+            this.label9.Location = new System.Drawing.Point(574, 217);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(135, 13);
             this.label9.TabIndex = 21;
@@ -286,7 +286,7 @@
             // 
             // ToggleKeyInputBox
             // 
-            this.ToggleKeyInputBox.Location = new System.Drawing.Point(338, 224);
+            this.ToggleKeyInputBox.Location = new System.Drawing.Point(574, 233);
             this.ToggleKeyInputBox.Name = "ToggleKeyInputBox";
             this.ToggleKeyInputBox.Size = new System.Drawing.Size(142, 20);
             this.ToggleKeyInputBox.TabIndex = 20;
@@ -295,7 +295,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(335, 259);
+            this.label7.Location = new System.Drawing.Point(571, 268);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(139, 13);
             this.label7.TabIndex = 24;
@@ -339,7 +339,7 @@
             this.TresholdMaxTrackBar.Maximum = 100;
             this.TresholdMaxTrackBar.Minimum = 1;
             this.TresholdMaxTrackBar.Name = "TresholdMaxTrackBar";
-            this.TresholdMaxTrackBar.Size = new System.Drawing.Size(268, 45);
+            this.TresholdMaxTrackBar.Size = new System.Drawing.Size(533, 45);
             this.TresholdMaxTrackBar.TabIndex = 32;
             this.TresholdMaxTrackBar.Value = 100;
             this.TresholdMaxTrackBar.ValueChanged += new System.EventHandler(this.TresholdMaxTrackBar_ValueChanged);
@@ -384,7 +384,7 @@
             // KeyPressDelayLabel
             // 
             this.KeyPressDelayLabel.AutoSize = true;
-            this.KeyPressDelayLabel.Location = new System.Drawing.Point(441, 101);
+            this.KeyPressDelayLabel.Location = new System.Drawing.Point(677, 110);
             this.KeyPressDelayLabel.Name = "KeyPressDelayLabel";
             this.KeyPressDelayLabel.Size = new System.Drawing.Size(31, 13);
             this.KeyPressDelayLabel.TabIndex = 40;
@@ -393,7 +393,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(338, 101);
+            this.label12.Location = new System.Drawing.Point(574, 110);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(84, 13);
             this.label12.TabIndex = 39;
@@ -403,7 +403,7 @@
             // 
             this.KeyPressDelayTrackBar.BackColor = System.Drawing.SystemColors.Control;
             this.KeyPressDelayTrackBar.LargeChange = 500;
-            this.KeyPressDelayTrackBar.Location = new System.Drawing.Point(338, 117);
+            this.KeyPressDelayTrackBar.Location = new System.Drawing.Point(574, 126);
             this.KeyPressDelayTrackBar.Maximum = 5000;
             this.KeyPressDelayTrackBar.Minimum = 100;
             this.KeyPressDelayTrackBar.Name = "KeyPressDelayTrackBar";
@@ -415,7 +415,7 @@
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(337, 311);
+            this.SaveButton.Location = new System.Drawing.Point(573, 320);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(272, 23);
             this.SaveButton.TabIndex = 501;
@@ -444,19 +444,10 @@
             this.TimesPerSecondLabel.TabIndex = 26;
             this.TimesPerSecondLabel.Text = "Times Per Second:";
             // 
-            // ChunksPerSecondLabel
-            // 
-            this.ChunksPerSecondLabel.AutoSize = true;
-            this.ChunksPerSecondLabel.Location = new System.Drawing.Point(126, 316);
-            this.ChunksPerSecondLabel.Name = "ChunksPerSecondLabel";
-            this.ChunksPerSecondLabel.Size = new System.Drawing.Size(25, 13);
-            this.ChunksPerSecondLabel.TabIndex = 27;
-            this.ChunksPerSecondLabel.Text = "100";
-            // 
             // BufferLabel
             // 
             this.BufferLabel.AutoSize = true;
-            this.BufferLabel.Location = new System.Drawing.Point(126, 316);
+            this.BufferLabel.Location = new System.Drawing.Point(212, 307);
             this.BufferLabel.Name = "BufferLabel";
             this.BufferLabel.Size = new System.Drawing.Size(13, 13);
             this.BufferLabel.TabIndex = 504;
@@ -477,16 +468,25 @@
             this.BufferTrackBar.Location = new System.Drawing.Point(23, 332);
             this.BufferTrackBar.Minimum = 1;
             this.BufferTrackBar.Name = "BufferTrackBar";
-            this.BufferTrackBar.Size = new System.Drawing.Size(268, 45);
+            this.BufferTrackBar.Size = new System.Drawing.Size(533, 45);
             this.BufferTrackBar.TabIndex = 502;
             this.BufferTrackBar.Value = 1;
             this.BufferTrackBar.ValueChanged += new System.EventHandler(this.BufferTrackBar_ValueChanged);
+            // 
+            // ChunksPerSecondLabel
+            // 
+            this.ChunksPerSecondLabel.AutoSize = true;
+            this.ChunksPerSecondLabel.Location = new System.Drawing.Point(227, 307);
+            this.ChunksPerSecondLabel.Name = "ChunksPerSecondLabel";
+            this.ChunksPerSecondLabel.Size = new System.Drawing.Size(25, 13);
+            this.ChunksPerSecondLabel.TabIndex = 27;
+            this.ChunksPerSecondLabel.Text = "100";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(631, 402);
+            this.ClientSize = new System.Drawing.Size(874, 402);
             this.Controls.Add(this.BufferLabel);
             this.Controls.Add(this.BufferTimesLabel);
             this.Controls.Add(this.BufferTrackBar);
@@ -583,10 +583,10 @@
         private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.TrackBar ChunksPerSecondTrackBar;
         private System.Windows.Forms.Label TimesPerSecondLabel;
-        private System.Windows.Forms.Label ChunksPerSecondLabel;
         private System.Windows.Forms.Label BufferLabel;
         private System.Windows.Forms.Label BufferTimesLabel;
         private System.Windows.Forms.TrackBar BufferTrackBar;
+        private System.Windows.Forms.Label ChunksPerSecondLabel;
     }
 }
 

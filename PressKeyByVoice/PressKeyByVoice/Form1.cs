@@ -155,12 +155,21 @@ namespace PressKeyByVoice
             Process[] processlist = Process.GetProcesses();
             for (int i = 0; i < processlist.Length; i++)
             {
-                ProgramComboBox.Items.Add(processlist[i].ProcessName);
+                if (!String.IsNullOrEmpty(processlist[i].MainWindowTitle))
+                {
+                    ProgramComboBox.Items.Add(processlist[i].ProcessName);
+                }
             }
             ProgramComboBox.Sorted = true;
 
             //Set the default key for enabeling / disabeling the program
             RegisterHotKey(this.Handle, DisableEnableKey, 0, (int)Keys.F5);
+            var pos = this.PointToScreen(KeyPressStatusLabel.Location);
+            pos = StatusBox.PointToClient(pos);
+            KeyPressStatusLabel.Parent = StatusBox;
+            KeyPressStatusLabel.Location = pos;
+            KeyPressStatusLabel.BackColor = Color.Transparent;
+
         }
 
         
@@ -216,7 +225,7 @@ namespace PressKeyByVoice
         private void sourceStream_DataAvailable(object sender, WaveInEventArgs e)
         {
            
-            if (!keyReleaserRunning)
+            if (!keyReleaserRunning && !DisableEnable)
             {
                 float[] amplitudes = new float[e.BytesRecorded];
                 byte[] buffer = e.Buffer;
@@ -230,7 +239,7 @@ namespace PressKeyByVoice
                     amplitudes[counter] = sample32;
                     counter++;
                 }
-                //int volume = (int)(((((bytesAsInts.Average() / 10) - 10) * 100) - 200) / (1000 / sensitivity));
+
                 try
                 {
                     int volume = (int)(amplitudes.Max() * 10 * sensitivity);
@@ -238,25 +247,37 @@ namespace PressKeyByVoice
                     if(globalCounter > (globalBuffer - 1))
                     {
                         volume = keepingTrack / globalBuffer;
+
+                        UpdatePeakVolumeBar(volume);
                         if (volume > treshold && volume < maxTreshold)
                         {
                             if (selectedProcess != null)
                             {
                                 if (selectedProcess.Id == GetActiveProcessID())
                                 {
-                                    /* keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
-                                     try { keyReleaser.Start(); } catch { };*/
+                                    UpdateKeyPressStatusText("KEY " + keyToBePressed.ToString() + " Is Being Pressed!");
+
+                                    UpdateStatusBoxColor(Color.Green);
                                     DateTime _desired = DateTime.Now.AddMilliseconds(keyPressDuration);
+                                   
                                     while (DateTime.Now < _desired)
                                     {
                                         sim.Keyboard.KeyDown(key);
-                                        Thread.Sleep(1);
+                                        Thread.Sleep(10);
                                     }
-                                    UpdateStatusBoxColor(Color.Red);
+                                } else
+                                {
+                                    UpdateKeyPressStatusText("You'r not in your selected program! (will not press the key)");
                                 }
+                            } else
+                            {
+                                UpdateKeyPressStatusText("You'r not in your selected program! (will not press the key)");
                             }
+                        } else
+                        {
+                            UpdateKeyPressStatusText("KEY " + keyToBePressed.ToString() + " Is NOT Being Pressed!");
+                            UpdateStatusBoxColor(Color.Red);
                         }
-                        UpdatePeakVolumeBar(volume);
                         keepingTrack = 0;
                         globalCounter = 0;
                     }
@@ -328,9 +349,10 @@ namespace PressKeyByVoice
                                             keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
                                             keyReleaser.Start();
                                         }
-                                        KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
+                                        
                                     }
                                 }
+                                KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
                                 StatusBox.BackColor = Color.Green;
                             }
                             else
@@ -366,9 +388,10 @@ namespace PressKeyByVoice
                                     {
                                         Thread keyReleaser = new Thread(new ThreadStart(() => KeyReleaser()));
                                         keyReleaser.Start();
-                                        KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
                                     }
                                 }
+
+                                KeyPressStatusLabel.Text = "Key " + keyToBePressed.ToString() + " is currently being pressed!";
                                 StatusBox.BackColor = Color.Green;
                             }
                             else
@@ -437,16 +460,9 @@ namespace PressKeyByVoice
         /// </summary>
         private void KeyReleaser()
         {
-            keyReleaserRunning = true;
-            UpdateStatusBoxColor(Color.Green);
-            DateTime _desired = DateTime.Now.AddMilliseconds(keyPressDuration);
-            while (DateTime.Now < _desired)
-            {
-                sim.Keyboard.KeyDown(key);
-                Thread.Sleep(10);
-            }
-            UpdateStatusBoxColor(Color.Red);
-            keyReleaserRunning = false;
+
+            Thread.Sleep(keyPressDuration);
+            sim.Keyboard.KeyUp(key);
         }
 
         
@@ -624,7 +640,10 @@ namespace PressKeyByVoice
             Process[] processlist = Process.GetProcesses();
             for (int i = 0; i < processlist.Length; i++)
             {
-                ProgramComboBox.Items.Add(processlist[i].ProcessName);
+                if (!String.IsNullOrEmpty(processlist[i].MainWindowTitle))
+                {
+                    ProgramComboBox.Items.Add(processlist[i].ProcessName);
+                }
             }
         }
 
@@ -646,11 +665,13 @@ namespace PressKeyByVoice
                     {
                         DisableEnable = true;
                         StatusBox.BackColor = Color.Black;
+                        KeyPressStatusLabel.BackColor = Color.White;
                         KeyPressStatusLabel.Text = "DISABLED";
                     } else
                     {
                         DisableEnable = false;
                         StatusBox.BackColor = Color.Red;
+                        KeyPressStatusLabel.BackColor = Color.Transparent;
                         KeyPressStatusLabel.Text = "ENABLED";
                     }
                 } else
